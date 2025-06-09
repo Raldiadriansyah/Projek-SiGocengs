@@ -28,13 +28,13 @@ export default function Header() {
         <div className="w-1/3 flex justify-end items-center space-x-4 ">
           <div className="flex items-center space-x-6">
               <a
-                href="#"
+                href="/login"
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 mr-10px"
               >
                 Sign In
               </a>
               <a
-                href="#"
+                href="/register"
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
               >
                 Sign Up

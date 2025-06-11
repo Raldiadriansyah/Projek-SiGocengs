@@ -17,25 +17,25 @@ export default function Sidebar({ isOpen }) {
             <div id="sidebar-menu" className="w-full mt-5">
                 <ul id="menu-list" className="space-y-8">
                     <li>
-                        <NavLink id="menu-1" to="/" className={menuClass}>
+                        <NavLink id="menu-1" to="/guest" className={menuClass}>
                             <BiHome size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Beranda</span>}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-2" to="/" className={menuClass}>
+                        <NavLink id="menu-2" to="/Saldo" className={menuClass}>
                             <BsCoin  size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Saldo</span>}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-3" to="/" className={menuClass}>
+                        <NavLink id="menu-3" to="/Transaksi" className={menuClass}>
                             <GrTransaction size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Transaksi</span>}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-4" to="/" className={menuClass}>
+                        <NavLink id="menu-4" to="/Budget" className={menuClass}>
                             <HiClipboardList size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Kelola Bugdet</span>}
                         </NavLink>

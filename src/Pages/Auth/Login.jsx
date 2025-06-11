@@ -1,6 +1,31 @@
-import { Link } from "react-router-dom";
-
+import { useState } from "react";
+import { userAPI } from "../../assets/services/userAPI";
+import { Link, useNavigate } from "react-router-dom";
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      const users = await userAPI.fetchUser();
+      const user = users.find(
+        (u) => u.email === email && u.password === password
+      );
+
+     if (user) {
+        localStorage.setItem("userName", user.nama || "User");
+        navigate("/guest");
+      } else {
+        setMessage("❌ Email atau password salah!");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage("❌ Gagal mengakses server.");
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden w-full max-w-6xl transition-all duration-500 ease-in-out group">
@@ -11,12 +36,20 @@ export default function Login() {
             SiGocengs
           </h2>
 
+          {message && (
+            <div className="mb-4 text-sm font-medium text-center text-red-500">
+              {message}
+            </div>
+          )}
+
           <div className="space-y-4">
             {/* Email Input */}
             <div className="relative">
               <input
                 type="email"
                 placeholder="Input your user ID or Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-5 py-3 pl-12 rounded-xl border border-gray-200 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">📧</span>
@@ -27,6 +60,8 @@ export default function Login() {
               <input
                 type="password"
                 placeholder="Input your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-5 py-3 pl-12 rounded-xl border border-gray-200 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔒</span>
@@ -43,7 +78,9 @@ export default function Login() {
             </a>
           </div>
 
-          <button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
+          <button 
+          onClick={handleLogin}
+          className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
             🔐 LOG IN
           </button>
         </div>

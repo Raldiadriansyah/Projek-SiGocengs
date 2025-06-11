@@ -13,7 +13,7 @@ export default function Sidebar({ isOpen }) {
         }`;
 
     return (
-        <div className={`min-h-screen bg-blue-50 shadow-lg transition-all duration-300 ${isOpen ? "w-80 p-6" : "w-20 p-4"}`}>
+        <div className={`h-full rounded-b-2xl bg-blue-50 shadow-lg transition-all duration-300 ${isOpen ? "w-80 p-6" : "w-23 p-4"}`}>
             <div id="sidebar-menu" className="w-full mt-5">
                 <ul id="menu-list" className="space-y-8">
                     <li>

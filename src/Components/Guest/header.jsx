@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function header({ toggleSidebar }){
     
     return(
-        <header className="bg-blue-50 shadow-md border-b border-gray-300 w-full">
+        <header className="bg-blue-50 shadow-md border-b border-gray-300 w-full ">
             <div className="flex  items-center px-10 py-3 text-sm text-gray-600  h-[100px]">
                 <button onClick={toggleSidebar}>
                     <AiOutlineMenu

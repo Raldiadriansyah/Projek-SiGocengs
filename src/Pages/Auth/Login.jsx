@@ -1,0 +1,67 @@
+import { Link } from "react-router-dom";
+
+export default function Login() {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden w-full max-w-6xl transition-all duration-500 ease-in-out group">
+        
+        {/* Login Form */}
+        <div className="bg-white p-10 flex flex-col justify-center hover:z-10 hover:scale-105 transition-transform duration-500 ease-in-out">
+          <h2 className="text-[30px] font-bold text-blue-600 mb-8">
+            SiGocengs
+          </h2>
+
+          <div className="space-y-4">
+            {/* Email Input */}
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Input your user ID or Email"
+                className="w-full px-5 py-3 pl-12 rounded-xl border border-gray-200 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              />
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">📧</span>
+            </div>
+
+            {/* Password Input */}
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Input your password"
+                className="w-full px-5 py-3 pl-12 rounded-xl border border-gray-200 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              />
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔒</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
+            <label className="flex items-center">
+              <input type="checkbox" className="mr-2" />
+              Remember me
+            </label>
+            <a href="#" className="hover:underline font-medium">
+              Forgot Password?
+            </a>
+          </div>
+
+          <button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
+            🔐 LOG IN
+          </button>
+        </div>
+
+        {/* Signup Info */}
+        <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-10 flex flex-col justify-center items-center transition-transform duration-500 ease-in-out hover:z-10 hover:scale-105">
+          <h2 className="text-2xl font-semibold mb-4">WELCOME!</h2>
+          <p className="text-center mb-6 text-sm">
+            Enter your details and start journey with us
+          </p>
+          <Link
+            to="/register"
+            className="bg-white text-blue-700 font-bold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105"
+          >
+            SIGNUP
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

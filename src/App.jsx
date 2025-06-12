@@ -28,10 +28,10 @@ function App() {
             <Route path="/forgot" element={<Forgot/>}/>
         </Route>
         <Route element={<Guest />}>
-            <Route path="/guest" element={<Dashboard/>}/>
+            <Route path="/Beranda" element={<Dashboard/>}/>
             <Route path="/Saldo" element={<Saldo/>}/>
             <Route path="/Transaksi" element={<Transaksi/>}/>
-            <Route path="/Budget" element={<Budget/>}/>
+            <Route path="/Kelola-Budget" element={<Budget/>}/>
         </Route>
       </Routes>
 

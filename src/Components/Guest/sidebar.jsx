@@ -17,7 +17,7 @@ export default function Sidebar({ isOpen }) {
             <div id="sidebar-menu" className="w-full mt-5">
                 <ul id="menu-list" className="space-y-8">
                     <li>
-                        <NavLink id="menu-1" to="/guest" className={menuClass}>
+                        <NavLink id="menu-1" to="/Beranda" className={menuClass}>
                             <BiHome size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Beranda</span>}
                         </NavLink>
@@ -35,7 +35,7 @@ export default function Sidebar({ isOpen }) {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-4" to="/Budget" className={menuClass}>
+                        <NavLink id="menu-4" to="/Kelola-Budget" className={menuClass}>
                             <HiClipboardList size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Kelola Bugdet</span>}
                         </NavLink>

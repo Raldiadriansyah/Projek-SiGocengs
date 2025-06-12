@@ -17,13 +17,14 @@ export default function Login() {
 
      if (user) {
         localStorage.setItem("userName", user.nama || "User");
-        navigate("/guest");
+        localStorage.setItem("userID", user.id.toString());
+        navigate("/Beranda");
       } else {
-        setMessage("❌ Email atau password salah!");
+        setMessage("Email atau password salah!");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setMessage("❌ Gagal mengakses server.");
+      setMessage("Gagal mengakses server.");
     }
   };
   return (

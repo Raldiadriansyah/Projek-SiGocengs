@@ -27,5 +27,5 @@
     --color-abu: oklch(70.7% 0.022 261.325);
 }
 body {
-    @apply font-barlow;
+    @apply font-poppins;
 }

@@ -15,8 +15,14 @@ export const saldoAPI = {
     return response.data;
     }
     ,
-    async createUser(data){
-        const response = await axios.post(API_URL, data, {headers})
-        return response.data
+    async createSaldo(data) {
+        return await axios.post(API_URL, data, { headers });
+    },
+
+    deleteSaldo: async (id) => {
+    const response = await axios.delete(`${API_URL}?id=eq.${id}`, {
+        headers,
+    });
+    return response.data;
     }
 }

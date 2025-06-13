@@ -21,7 +21,7 @@ export default function Guest(){
                 >
                     <Sidebar isOpen={isSidebarOpen} />
                 </div>
-                    <div id="main-content" className="flex-1 p-4">
+                    <div id="main-content" className="flex-1 p-4 bg-white-200">
                         <Outlet />
                     </div>
             </div>

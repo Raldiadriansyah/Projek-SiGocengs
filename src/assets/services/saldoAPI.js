@@ -24,5 +24,11 @@ export const saldoAPI = {
         headers,
     });
     return response.data;
-    }
+    },
+
+   updateSaldo: async (id, updatedData) => {
+    return await axios.patch(`${API_URL}?id=eq.${id}`, updatedData, {
+        headers,
+    });
+    },  
 }

@@ -29,15 +29,15 @@ export default function Sidebar({ isOpen }) {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-3" to="/Transaksi" className={menuClass}>
-                            <GrTransaction size={30} className="min-w-[30px]" />
-                            {isOpen && <span className="ml-5">Transaksi</span>}
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink id="menu-4" to="/Kelola-Budget" className={menuClass}>
                             <HiClipboardList size={30} className="min-w-[30px]" />
                             {isOpen && <span className="ml-5">Kelola Bugdet</span>}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="menu-3" to="/Transaksi" className={menuClass}>
+                            <GrTransaction size={30} className="min-w-[30px]" />
+                            {isOpen && <span className="ml-5">Transaksi</span>}
                         </NavLink>
                     </li>
                 </ul>

@@ -3,12 +3,15 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { transaksiAPI } from "../../assets/services/transaksiAPI";
 import { saldoAPI } from "../../assets/services/saldoAPI";
+import { BudgetAPI } from "../../assets/services/budgetAPI";
+import Swal from "sweetalert2";
 export default function Transaksi(){
     const [data, setData] = useState([]);
     const [newTransaksi, setNewTransaksi] = useState({
     saldo_id: "",
     jenis_transaksi: "masuk",
     jumlah: 0,
+    kebutuhan: "",
     });
 
     useEffect(() => {
@@ -47,6 +50,26 @@ export default function Transaksi(){
     }
     }, []);
 
+    const [dataBudget, setDataBudget] = useState([]);
+
+   useEffect(() => {
+    const fetchBudget = async () => {
+        const userId = localStorage.getItem("userID");
+        if (!userId) return;
+
+        try {
+        const result = await BudgetAPI.getAllByUser(userId);
+        setDataBudget(result);
+        } catch (error) {
+        console.error("Gagal memuat data budget:", error);
+        }
+    };
+
+    fetchBudget();
+    }, []);
+
+
+
     return(
          <div className="relative bg-blue-500 shadow-md border-b border-gray-300 w-full rounded-b-3xl h-[300px] mt-[-15px]">
             <div className="flex justify-center font-poppins text-center pt-8 space-x-90 ">
@@ -67,106 +90,180 @@ export default function Transaksi(){
              <div className="absolute top-[180px] left-1/2 transform -translate-x-1/2 w-[90%] bg-blue-50 rounded-xl shadow-lg h-[680px] z-10">
 
                  <button className="btn" onClick={()=>document.getElementById('my_modal_1').showModal()}>Tambah Transaksi</button>
-               <dialog id="my_modal_1" className="modal">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg mb-4">Tambah Transaksi</h3>
+              <dialog id="my_modal_1" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg mb-4">Tambah Transaksi</h3>
 
-                        <label className="block mb-2">Pilih Sumber</label>
-                        <select
-                        className="select select-bordered w-full mb-4"
-                        value={newTransaksi.saldo_id}
-                        onChange={(e) => setNewTransaksi({ ...newTransaksi, saldo_id: parseInt(e.target.value) })}
-                        >
-                        <option value="">-- Pilih Sumber --</option>
-                        {dataSaldo.map((s) => (
-                            <option key={s.id} value={s.id}>{s.sumber}</option>
-                        ))}
-                        </select>
+                    {/* Pilih Sumber */}
+                    <label className="block mb-2">Pilih Sumber</label>
+                    <select
+                    className="select select-bordered w-full mb-4"
+                    value={newTransaksi.saldo_id}
+                    onChange={(e) =>
+                        setNewTransaksi({ ...newTransaksi, saldo_id: parseInt(e.target.value) })
+                    }
+                    >
+                    <option value="">-- Pilih Sumber --</option>
+                    {dataSaldo.map((s) => (
+                        <option key={s.id} value={s.id}>
+                        {s.sumber}
+                        </option>
+                    ))}
+                    </select>
 
-                        <label className="block mb-2">Jenis Transaksi</label>
-                        <select
-                        className="select select-bordered w-full mb-4"
-                        value={newTransaksi.jenis_transaksi}
-                        onChange={(e) =>
+                    {/* Jenis Transaksi */}
+                    <label className="block mb-2">Jenis Transaksi</label>
+                    <select
+                    className="select select-bordered w-full mb-4"
+                    value={newTransaksi.jenis_transaksi}
+                    onChange={(e) => {
+                        const jenis = e.target.value;
                         setNewTransaksi({
-                            ...newTransaksi,
-                            jenis_transaksi: e.target.value,
+                        ...newTransaksi,
+                        jenis_transaksi: jenis,
+                        kebutuhan: jenis === "masuk" ? null : newTransaksi.kebutuhan,
+                        });
+                    }}
+                    >
+                    <option value="masuk">Masuk</option>
+                    <option value="keluar">Keluar</option>
+                    </select>
+
+                    {/* Jumlah */}
+                    <label className="block mb-2">Jumlah</label>
+                    <input
+                    type="number"
+                    className="input input-bordered w-full mb-4"
+                    value={newTransaksi.jumlah}
+                    onChange={(e) =>
+                        setNewTransaksi({
+                        ...newTransaksi,
+                        jumlah: parseInt(e.target.value),
                         })
-                        }
+                    }
+                    />
 
-                        >
-                        <option value="masuk">Masuk</option>
-                        <option value="keluar">Keluar</option>
-                        </select>
-
-                        <label className="block mb-2">Jumlah</label>
-                        <input
-                        type="number"
-                        className="input input-bordered w-full mb-4"
-                        value={newTransaksi.jumlah}
-                        onChange={(e) => setNewTransaksi({ ...newTransaksi, jumlah: parseInt(e.target.value) })}
-                        />
-
-                        <div className="modal-action">
-                        <form method="dialog" className="flex gap-2">
-                            <button className="btn">Close</button>
-                           <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={async () => {
-                                    try {
-                                    const userId = localStorage.getItem("userID");
-                                   if (!userId || !newTransaksi.saldo_id || newTransaksi.jumlah <= 0) {
-                                    alert("Lengkapi data terlebih dahulu!");
-                                    return;
-                                    }
-
-                                    await transaksiAPI.createTransaksi({
-                                        saldo_id: newTransaksi.saldo_id,
-                                        jenis_transaksi: newTransaksi.jenis_transaksi,
-                                        jumlah: newTransaksi.jumlah,
-                                        created_at: new Date().toISOString(),
-                                    });
+                    {/* Pilih Kebutuhan */}
+                <select
+                className="select select-bordered w-full mb-4"
+                value={newTransaksi.kebutuhan || ""}
+                onChange={(e) =>
+                    setNewTransaksi({ ...newTransaksi, kebutuhan: parseInt(e.target.value) })
+                }
+                disabled={newTransaksi.jenis_transaksi === "masuk"}
+                >
+                <option value="">
+                    {newTransaksi.jenis_transaksi === "masuk"
+                    ? "-- Tidak diperlukan --"
+                    : "-- Pilih Kebutuhan --"}
+                </option>
+                {dataBudget.map((item) => (
+                    <option key={item.id} value={item.id}>
+                    {item.jenis_kebutuhan}
+                    </option>
+                ))}
+                </select>
 
 
-                                    const saldoItem = dataSaldo.find(s => s.id === newTransaksi.saldo_id);
-                                    if (!saldoItem) {
-                                        alert("Saldo tidak ditemukan");
-                                        return;
-                                    }
+    {/* Tombol Simpan & Close */}
+    <div className="modal-action">
+      <form method="dialog" className="flex gap-2">
+        <button className="btn">Close</button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={async () => {
+            try {
+                const userId = localStorage.getItem("userID");
+                if (
+                !userId ||
+                !newTransaksi.saldo_id ||
+                newTransaksi.jumlah <= 0 ||
+                (newTransaksi.jenis_transaksi === "keluar" && !newTransaksi.kebutuhan)
+                ) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Peringatan",
+                    text: "Lengkapi semua data terlebih dahulu!",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                return;
+                }
 
-                                    const updatedSaldo = {
-                                        ...saldoItem,
-                                        saldo:
-                                        newTransaksi.jenis_transaksi === "masuk"
-                                            ? saldoItem.saldo + newTransaksi.jumlah
-                                            : saldoItem.saldo - newTransaksi.jumlah,
-                                    };
+                await transaksiAPI.createTransaksi({
+                saldo_id: newTransaksi.saldo_id,
+                jenis_transaksi: newTransaksi.jenis_transaksi,
+                jumlah: newTransaksi.jumlah,
+                kebutuhan: newTransaksi.jenis_transaksi === "masuk" ? null : newTransaksi.kebutuhan,
+                created_at: new Date().toISOString(),
+                });
 
-                                    await saldoAPI.updateSaldo(updatedSaldo.id, updatedSaldo);
+                const saldoItem = dataSaldo.find((s) => s.id === newTransaksi.saldo_id);
+                if (!saldoItem) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal",
+                    text: "Saldo tidak ditemukan",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                return;
+                }
 
-                                    setNewTransaksi({
-                                        saldo_id: "",
-                                        jenis_transaksi: "masuk",
-                                        jumlah: 0,
-                                    });
+                const updatedSaldo = {
+                ...saldoItem,
+                saldo:
+                    newTransaksi.jenis_transaksi === "masuk"
+                    ? saldoItem.saldo + newTransaksi.jumlah
+                    : saldoItem.saldo - newTransaksi.jumlah,
+                };
 
-                                    document.getElementById("my_modal_1").close(); 
-                                    window.location.reload(); 
+                await saldoAPI.updateSaldo(updatedSaldo.id, updatedSaldo);
 
-                                    } catch (error) {
-                                    console.error("Gagal menyimpan transaksi:", error);
-                                    alert("Terjadi kesalahan saat menyimpan transaksi.");
-                                    }
-                                }}
-                                >
-                                Simpan
-                                </button>
+                // Reset form dan tutup modal
+                setNewTransaksi({
+                saldo_id: "",
+                jenis_transaksi: "masuk",
+                jumlah: 0,
+                kebutuhan: "",
+                });
 
-                        </form>
-                        </div>
-                    </div>
-                    </dialog>
+                document.getElementById("my_modal_1").close();
+
+                // Tampilkan pesan sukses
+                Swal.fire({
+                icon: "success",
+                title: "Berhasil",
+                text: "Transaksi berhasil ditambahkan!",
+                timer: 2000,
+                showConfirmButton: false,
+                });
+
+                setTimeout(() => {
+                window.location.reload();
+                }, 2100);
+
+            } catch (error) {
+                console.error("Gagal menyimpan transaksi:", error);
+                Swal.fire({
+                icon: "error",
+                title: "Gagal",
+                text: "Terjadi kesalahan saat menyimpan transaksi.",
+                timer: 2000,
+                showConfirmButton: false,
+                });
+            }
+            }}
+
+        >
+          Simpan
+        </button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
 
 
                <div className="overflow-auto w-full px-4 mt-6">
@@ -177,12 +274,15 @@ export default function Transaksi(){
                         <th className="px-4 py-2 border-b">Tanggal</th>
                         <th className="px-4 py-2 border-b">Sumber</th>
                         <th className="px-4 py-2 border-b">Transaksi</th>
+                        <th className="px-4 py-2 border-b">Kebutuhan</th>
                         <th className="px-4 py-2 border-b">Jumlah</th>
+                        <th className="px-4 py-2 border-b">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((item, index) => {
                             const sumber = dataSaldo.find(s => s.id === item.saldo_id)?.sumber || "Tidak Diketahui";
+                            const kebutuhan = item.kebutuhan?.jenis_kebutuhan || "-";
 
                             return (
                                 <tr key={item.id}>
@@ -192,6 +292,7 @@ export default function Transaksi(){
                                 </td>
                                 <td className="px-4 py-2 border-b">{sumber}</td>
                                 <td className="px-4 py-2 border-b capitalize">{item.jenis_transaksi}</td>
+                                <td className="px-4 py-2 border-b capitalize">{kebutuhan}</td>
                                 <td className="px-4 py-2 border-b">Rp. {item.jumlah.toLocaleString("id-ID")}</td>
                                 </tr>
                             );

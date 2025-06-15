@@ -15,6 +15,7 @@ getAll: async () => {
     const userId = localStorage.getItem("userID");
     if (!userId) throw new Error("User belum login");
 
+    // Ambil saldo milik user
     const saldoResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelSaldo", {
       headers,
       params: {
@@ -24,15 +25,16 @@ getAll: async () => {
     });
 
     const saldoIds = saldoResponse.data.map(s => s.id);
+    if (saldoIds.length === 0) return [];
 
-    if (saldoIds.length === 0) return []; // user tidak punya saldo = tidak ada transaksi
-
-    // Ambil semua transaksi yang saldo_id-nya ada dalam daftar saldoIds
+    // Buat filter saldo_id
     const orFilter = saldoIds.map(id => `saldo_id.eq.${id}`).join(",");
-    const response = await axios.get(API_URL, {
+
+    // Ambil transaksi + relasi ke TabelBudget (melalui foreign key `kebutuhan`)
+    const response = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelTransaksi", {
       headers,
       params: {
-        select: "*",
+        select: "*, kebutuhan: TabelBudget(id, jenis_kebutuhan)", // JOIN ke TabelBudget
         or: `(${orFilter})`,
       },
     });
@@ -43,6 +45,7 @@ getAll: async () => {
     return [];
   }
 },
+
 
 
   createTransaksi: async (data) => {

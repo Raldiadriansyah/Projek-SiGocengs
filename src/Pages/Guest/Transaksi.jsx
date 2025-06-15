@@ -121,7 +121,6 @@ export default function Transaksi(){
                                     return;
                                     }
 
-                                    // 1. Tambah transaksi
                                     await transaksiAPI.createTransaksi({
                                         saldo_id: newTransaksi.saldo_id,
                                         jenis_transaksi: newTransaksi.jenis_transaksi,
@@ -129,7 +128,7 @@ export default function Transaksi(){
                                         created_at: new Date().toISOString(),
                                     });
 
-                                    // 2. Cari saldo dan update nilainya
+
                                     const saldoItem = dataSaldo.find(s => s.id === newTransaksi.saldo_id);
                                     if (!saldoItem) {
                                         alert("Saldo tidak ditemukan");
@@ -146,15 +145,14 @@ export default function Transaksi(){
 
                                     await saldoAPI.updateSaldo(updatedSaldo.id, updatedSaldo);
 
-                                    // 3. Reset form dan reload
                                     setNewTransaksi({
                                         saldo_id: "",
                                         jenis_transaksi: "masuk",
                                         jumlah: 0,
                                     });
 
-                                    document.getElementById("my_modal_1").close(); // tutup modal
-                                    window.location.reload(); // atau kamu bisa panggil fetchData()
+                                    document.getElementById("my_modal_1").close(); 
+                                    window.location.reload(); 
 
                                     } catch (error) {
                                     console.error("Gagal menyimpan transaksi:", error);

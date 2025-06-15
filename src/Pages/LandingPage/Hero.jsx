@@ -1,132 +1,197 @@
 import { useEffect, useState } from "react";
+import {
+    FaMoneyCheckAlt,
+    FaChartLine,
+    FaPiggyBank,
+    FaBell,
+    FaLock,
+} from "react-icons/fa";
+
 const testimonials = [
     {
-        quote: `"Don't know where your money is going? With this app, you can get your family budget in order."`,
+        quote: "Don't know where your money is going? With this app, you can get your family budget in order.",
         name: "– Gorchakov, App Store",
     },
     {
-        quote: `"A simple yet powerful tool for managing finances. Highly recommend!"`,
+        quote: "A simple yet powerful tool for managing finances. Highly recommend!",
         name: "– Amanda, Google Play",
     },
     {
-        quote: `"I now feel in control of my spending. This app changed how I view money."`,
+        quote: "I now feel in control of my spending. This app changed how I view money.",
         name: "– Yusuf, App Store",
     },
 ];
+
+const features = [
+    {
+        title: "Transaksi Harian",
+        description: "Catat pemasukan dan pengeluaran dengan cepat dan mudah.",
+        icon: <FaMoneyCheckAlt className="text-white text-4xl" />,
+        color: "from-purple-500 to-indigo-600",
+    },
+    {
+        title: "Laporan & Analisis",
+        description: "Pantau laporan keuangan harian, mingguan, dan bulanan.",
+        icon: <FaChartLine className="text-white text-4xl" />,
+        color: "from-blue-500 to-cyan-500",
+    },
+    {
+        title: "Manajemen Anggaran",
+        description: "Tetapkan batas pengeluaran & kelola target menabung.",
+        icon: <FaPiggyBank className="text-white text-4xl" />,
+        color: "from-green-500 to-emerald-500",
+    },
+    {
+        title: "Notifikasi & Reminder",
+        description: "Pengingat untuk pengeluaran, tagihan, dan lainnya.",
+        icon: <FaBell className="text-white text-4xl" />,
+        color: "from-yellow-400 to-orange-500",
+    },
+    {
+        title: "Keamanan Data",
+        description: "Semua data dienkripsi dan aman dengan privasi pengguna.",
+        icon: <FaLock className="text-white text-4xl" />,
+        color: "from-gray-700 to-gray-900",
+    },
+];
+
 export default function Hero() {
     const [current, setCurrent] = useState(0);
     const [fade, setFade] = useState(true);
+    const [darkMode, setDarkMode] = useState(false);
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add("dark-mode");
+            document.body.classList.remove("light-mode");
+        } else {
+            document.body.classList.add("light-mode");
+            document.body.classList.remove("dark-mode");
+        }
+    }, [darkMode]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setFade(false); // Start fade out
+            setFade(false);
             setTimeout(() => {
                 setCurrent((prev) => (prev + 1) % testimonials.length);
-                setFade(true); // Fade in next slide
-            }, 200); // Small delay for smooth fade
-        }, 3000); // Change every 3 seconds
+                setFade(true);
+            }, 200);
+        }, 3500);
         return () => clearInterval(interval);
     }, []);
 
+    const toggleTheme = () => {
+        setDarkMode((prev) => !prev);
+    };
+
+    const scrollToFeatures = () => {
+        const section = document.getElementById("features");
+        if (section) section.scrollIntoView({ behavior: "smooth" });
+    };
+
     return (
-        <section className="bg-gradient-to-b from-white to-blue-50 pt-24 md:pt-32 pb-16">
-            {/* Header / Hero Text + Gambar */}
-            <div className="max-w-7xl mx-auto px-4 flex flex-col-reverse md:flex-row items-center justify-between mb-16">
+        <section
+            className={`min-h-screen w-full pt-24 pb-16 relative transition-colors duration-500 ${darkMode
+                ? "bg-gray-900 text-white"
+                : "bg-gradient-to-br from-blue-100 to-purple-200 text-gray-900"
+                }`}
+        >
+
+            {/* Background Blur Glowing Orbs */}
+            <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+                <div
+                    className={`absolute top-10 left-10 w-32 h-32 rounded-full filter blur-2xl animate-float ${darkMode ? "bg-gray-600 opacity-30" : "bg-black opacity-20"
+                        }`}
+                />
+                <div
+                    className={`absolute bottom-16 right-20 w-40 h-40 rounded-full filter blur-3xl animate-float ${darkMode ? "bg-gray-500 opacity-25" : "bg-black opacity-20"
+                        }`}
+                />
+                <div
+                    className={`absolute top-1/3 left-1/3 w-24 h-24 rounded-full filter blur-xl animate-float ${darkMode ? "bg-gray-700 opacity-20" : "bg-black opacity-20"
+                        }`}
+                />
+                <div
+                    className={`absolute bottom-10 left-1/4 w-20 h-20 rounded-full filter blur-2xl animate-float ${darkMode ? "bg-gray-600 opacity-30" : "bg-black opacity-20"
+                        }`}
+                />
+            </div>
+
+
+            {/* Konten Utama */}
+            <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-8 mb-20 relative z-10">
+                {/* Text Left */}
                 <div className="w-full md:w-1/2 text-center md:text-left">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
-                        Save money. <br /> Track expenses.
+
+                    <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+                        We collaborate <br /> to build digital experience
                     </h1>
-                    <p className="text-gray-600 mt-4 text-lg">
-                        Monefy makes managing your personal finances easy and intuitive.
+                    <button
+                        onClick={toggleTheme}
+                        className="absolute top-4 left-4 btn btn-sm btn-outline z-50"
+                    >
+                        {darkMode ? "☀️ Normal Mode" : "🌙 Dark Mode"}
+                    </button>
+                    <p className="mt-4 text-lg opacity-80">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cursus
+                        imperdiet sed id elementum.
                     </p>
-                    <div className="mt-6 flex flex-col sm:flex-row sm:justify-center md:justify-start gap-4">
-                        <p className="text-gray-700 font-medium">Lorem ipsum</p>
-                    </div>
+                    <button
+                        onClick={scrollToFeatures}
+                        className="mt-6 px-6 py-3 rounded-full bg-neutral text-white hover:bg-neutral-focus transition"
+                    >
+                        Get Started
+                    </button>
                 </div>
 
-                <div className="w-full md:w-1/2 mb-12 md:mb-0 flex justify-center">
-                    <img
-                        src="img/uang.png"
-                        className="w-[450px] md:w-[500px] drop-shadow-xl"
-                        alt="Hero"
-                    />
+                {/* Image Right */}
+                <div className="relative w-full md:w-1/2 flex justify-center items-center">
+                    <div className="relative w-[280px] h-[360px] rounded-[50%/60%] border-2 border-base-content overflow-hidden shadow-xl">
+                        <img
+                            src="img/Sigocengss.jpg"
+                            alt="Profile"
+                            className="object-cover w-full h-full"
+                        />
+                    </div>
+                    <div className="absolute top-4 left-4 text-4xl text-base-content">★</div>
+                    <div className="absolute bottom-4 right-6 text-5xl text-base-content">✦</div>
                 </div>
             </div>
 
-            {/* Card Grid Layout */}
-            <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[250px] md:auto-rows-[300px] lg:auto-rows-[320px]">
-
-                {/* Card 1 - Savings */}
-                <div className="bg-white rounded-2xl p-6 shadow-md col-span-2 row-span-2 flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Savings 💰</h3>
-                        <p className="text-green-600 text-2xl font-bold">$22,463.75</p>
-                        <ul className="text-gray-600 mt-3 text-sm space-y-1">
-                            <li>• Income</li>
-                            <li>• Expenses</li>
-                            <li>• Investments</li>
-                        </ul>
-                    </div>
-                    <div className="mt-4">
-                        <div className="bg-gray-100 rounded-xl p-4 text-sm text-gray-600">
-                            Smart savings plan available
-                        </div>
-                    </div>
+            {/* Feature Cards */}
+           {/* Feature Cards */}
+            <div id="features" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20 px-4 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+                <div
+                key={index}
+                className={`bg-gradient-to-br ${feature.color} rounded-2xl p-6 text-white shadow-lg transform transition duration-300 hover:scale-105`}
+                >
+                <div className="mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                <p className="text-sm opacity-90">{feature.description}</p>
                 </div>
+            ))}
+            </div>
 
-                {/* Card 2 - Feature Icons */}
-                <div className="bg-white rounded-2xl p-6 shadow-md col-span-2 flex items-center justify-around text-2xl">
 
+            {/* Testimonials */}
+            <div className="max-w-3xl mx-auto bg-primary text-primary-content rounded-2xl p-8 shadow-md text-center relative overflow-hidden">
+                <div
+                    key={current}
+                    className={`transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"
+                        }`}
+                >
+                    <p className="italic text-xl">"{testimonials[current].quote}"</p>
+                    <p className="mt-4 text-sm font-semibold">{testimonials[current].name}</p>
                 </div>
-
-
-                {/* Card 3 - Phone Mockup */}
-                <div className="bg-[#2927b6] rounded-2xl p-4 shadow-md col-span-2 row-span-2 flex items-center justify-center">
-                    <img
-                        src="img/mobile-finance-ui.png"
-                        className="h-full object-contain"
-                    />
-                </div>
-                {/* Card 4 - Image/Person */}
-                <div className="bg-white rounded-2xl overflow-hidden col-span-2">
-                    <img
-                        src="img/orang.jpg"
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-
-                {/* Card 5 - Testimonial */}
-                {/* Testimonial Slider Card with Fade Animation */}
-                <div className="bg-blue-700 text-white rounded-2xl p-6 shadow-md col-span-3 relative overflow-hidden">
-                    <div
-                        key={current}
-                        className={`transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"
-                            }`}
-                    >
-                        <p className="italic text-lg">{testimonials[current].quote}</p>
-                        <p className="mt-4 text-sm font-semibold">{testimonials[current].name}</p>
-                    </div>
-
-                    {/* Dots indicator */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                        {testimonials.map((_, index) => (
-                            <span
-                                key={index}
-                                className={`h-2 w-2 rounded-full ${index === current ? "bg-white" : "bg-white/50"
-                                    }`}
-                            ></span>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Card 6 - Guides & Tools */}
-                <div className="bg-white rounded-2xl p-6 shadow-md col-span-3 flex flex-col justify-between">
-                    <h4 className="text-lg font-bold text-gray-800 mb-2">Guides & Tools</h4>
-                    <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                        <li>Learning how to budget</li>
-                        <li>Getting debt free</li>
-                        <li>Building your wealth</li>
-                    </ul>
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {testimonials.map((_, index) => (
+                        <span
+                            key={index}
+                            className={`h-2 w-2 rounded-full ${index === current ? "bg-white" : "bg-white/50"
+                                }`}
+                        ></span>
+                    ))}
                 </div>
             </div>
         </section>

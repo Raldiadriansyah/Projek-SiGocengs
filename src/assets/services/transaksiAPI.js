@@ -10,20 +10,41 @@ const headers = {
 }
 
 export const transaksiAPI = {
-    getAll: async () => {
-    try {
-      const response = await axios.get(API_URL, {
-        headers,
-        params: {
-          select: "*",
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Gagal mengambil data transaksi:", error);
-      return [];
-    }
-  },
+getAll: async () => {
+  try {
+    const userId = localStorage.getItem("userID");
+    if (!userId) throw new Error("User belum login");
+
+    const saldoResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelSaldo", {
+      headers,
+      params: {
+        select: "id",
+        user_id: `eq.${userId}`,
+      },
+    });
+
+    const saldoIds = saldoResponse.data.map(s => s.id);
+
+    if (saldoIds.length === 0) return []; // user tidak punya saldo = tidak ada transaksi
+
+    // Ambil semua transaksi yang saldo_id-nya ada dalam daftar saldoIds
+    const orFilter = saldoIds.map(id => `saldo_id.eq.${id}`).join(",");
+    const response = await axios.get(API_URL, {
+      headers,
+      params: {
+        select: "*",
+        or: `(${orFilter})`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Gagal mengambil data transaksi:", error);
+    return [];
+  }
+},
+
+
   createTransaksi: async (data) => {
     try {
       const response = await axios.post(API_URL, data, {

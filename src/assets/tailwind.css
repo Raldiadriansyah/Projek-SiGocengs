@@ -4,6 +4,12 @@
     themes: light --default, dark --prefersdark;
 }
 
+@keyframes float {
+  0% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-80px) translateX(50px); }
+  100% { transform: translateY(0px) translateX(0px); }
+}
+
 @font-face {
     font-family: 'Barlow';
     src: url('fonts/Barlow-Regular.ttf');

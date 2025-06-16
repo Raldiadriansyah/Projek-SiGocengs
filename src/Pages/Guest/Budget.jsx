@@ -140,9 +140,13 @@ const COLORS = ["#34d399", "#f87171"];
      <div className="bg-blue-50 rounded-r-xl shadow-lg h-auto flex-1 p-6 ml-[-50px]">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-blue-700 ml-10">Daftar Budget</h2>
-        <button className="btn mr-4" onClick={() => document.getElementById('my_modal_1').showModal()}>
-          Tambah Budget
-        </button>
+        <button
+        className="btn mr-4 bg-blue-400 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded transition duration-300"
+        onClick={() => document.getElementById('my_modal_1').showModal()}
+      >
+        Tambah Budget
+      </button>
+
           <dialog id="my_modal_1" className="modal">
             <div className="modal-box">
               <h3 className="font-bold text-lg">Tambah Budget</h3>

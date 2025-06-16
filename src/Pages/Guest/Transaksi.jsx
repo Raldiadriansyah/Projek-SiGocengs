@@ -89,7 +89,7 @@ export default function Transaksi(){
             </div>
              <div className="absolute top-[180px] left-1/2 transform -translate-x-1/2 w-[90%] bg-blue-50 rounded-xl shadow-lg h-[680px] z-10">
 
-                 <button className="btn" onClick={()=>document.getElementById('my_modal_1').showModal()}>Tambah Transaksi</button>
+                 <button className="btn bg-blue-400 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded transition duration-300 ml-10 mt-5" onClick={()=>document.getElementById('my_modal_1').showModal()}>Tambah Transaksi</button>
               <dialog id="my_modal_1" className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg mb-4">Tambah Transaksi</h3>

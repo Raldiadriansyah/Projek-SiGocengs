@@ -8,6 +8,8 @@ const Login = React.lazy(() => import("./Pages/Auth/Login"));
 const Forgot = React.lazy(() => import("./Pages/Auth/Forgot"));
 const Register = React.lazy(() => import("./Pages/Auth/Register"));
 const Home = React.lazy(() => import("./Pages/LandingPage/Hero"));
+const About = React.lazy(() => import("./Pages/LandingPage/About"));
+const Testimoni = React.lazy(() => import("./Pages/LandingPage/Testimoni"));
 const LandingPage = React.lazy(() => import("./Layouts/LandingPage"));
 const Dashboard = React.lazy(() => import("./Pages/Guest/Dashboard"));
 const Saldo = React.lazy(() => import("./Pages/Guest/Saldo"));
@@ -21,6 +23,8 @@ function App() {
       <Routes>
         <Route element={<LandingPage />}>
             <Route path="/" element={<Home/>}/>
+            <Route path="/about" element={<About/>}/>
+            <Route path="/testimoni" element={<Testimoni/>}/>
         </Route>
                 <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login/>}/>

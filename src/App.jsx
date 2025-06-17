@@ -16,13 +16,7 @@ const Saldo = React.lazy(() => import("./Pages/Guest/Saldo"));
 const Transaksi = React.lazy(() => import("./Pages/Guest/Transaksi"));
 const Budget = React.lazy(() => import("./Pages/Guest/Budget"));
 const Guest = React.lazy(() => import("./Layouts/Guest"));
-const Frame = React.lazy(() => import("./Layouts/Frame"));
-const HomeAdmin = React.lazy(() => import("./Pages/Admin/Home"));
-const FAQ = React.lazy(() => import("./Pages/Admin/FAQ"));
-const MTestimoni = React.lazy(() => import("./Pages/Admin/Testimoni"));
-const KotakMasuk = React.lazy(() => import("./Pages/Admin/KotakMasuk"));
-const UserRole = React.lazy(() => import("./Pages/Admin/UserRole"));
-const Informasi = React.lazy(() => import("./Pages/Admin/Informasi"));
+
 
 function App() {
   return (
@@ -44,15 +38,7 @@ function App() {
             <Route path="/Transaksi" element={<Transaksi/>}/>
             <Route path="/Kelola-Budget" element={<Budget/>}/>
         </Route>
-        <Route element={<Frame />}>
-            <Route path="/Admin" element={<HomeAdmin/>} />
-            <Route path="/FAQ" element={<FAQ/>} />
-            <Route path="/TestimoniAdmin" element={<MTestimoni/>} />
-            <Route path="/KotakMasuk" element={<KotakMasuk/>} />
-            <Route path="/UserRole" element={<UserRole/>} />
-            <Route path="/Informasi" element={<Informasi/>} />
-        </Route>
-        
+              
       </Routes>
 
     </Suspense>

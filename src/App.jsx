@@ -37,10 +37,8 @@ function App() {
             <Route path="/Saldo" element={<Saldo/>}/>
             <Route path="/Transaksi" element={<Transaksi/>}/>
             <Route path="/Kelola-Budget" element={<Budget/>}/>
-        </Route>
-              
+        </Route>              
       </Routes>
-
     </Suspense>
   )
 }

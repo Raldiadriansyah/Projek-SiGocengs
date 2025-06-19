@@ -11,31 +11,60 @@ const headers = {
 
 export const transaksiAPI = {
 getAll: async () => {
+  try {
+    const userId = localStorage.getItem("userID");
+    if (!userId) throw new Error("User belum login");
+
+    // Ambil semua saldo milik user
+    const saldoResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/Tabelsaldo", {
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      params: {
+        select: "id",
+        user_id: `eq.${userId}`,
+      },
+    });
+
+    const saldoIds = saldoResponse.data.map((s) => s.id);
+    if (saldoIds.length === 0) return [];
+
+    // Buat filter saldo_id secara or
+    const orFilter = saldoIds.map(id => `saldo_id.eq.${id}`).join(",");
+
+    // Ambil transaksi berdasarkan saldo_id milik user
     const response = await axios.get(API_URL, {
       headers: {
         apikey: API_KEY,
         Authorization: `Bearer ${API_KEY}`,
       },
       params: {
-  select: `
-    *,
-    saldo (
-      id,
-      sumber_id,
-      sumber (
-        id,
-        nama_sumber
-      )
-    ),
-    kebutuhan (
-      id,
-      jenis_kebutuhan
-    )
-  `,
-},
+        select: `
+          *,
+          saldo (
+            id,
+            sumber_id,
+            sumber (
+              id,
+              nama_sumber
+            )
+          ),
+          kebutuhan (
+            id,
+            jenis_kebutuhan
+          )
+        `,
+        or: `(${orFilter})`,
+      },
     });
+
     return response.data;
-  },
+  } catch (error) {
+    console.error("Gagal mengambil data transaksi:", error);
+    return [];
+  }
+},
 
 
   getTransaksi: async () => {
@@ -84,6 +113,18 @@ getAll: async () => {
     console.error("Gagal membuat transaksi:", error.response?.data || error.message);
     throw error;
   }
+},
+
+deleteTransaksi: async (id) => {
+  return await axios.delete(`${API_URL}?id=eq.${id}`, {
+    headers: {
+      apikey: API_KEY,
+      Authorization: `Bearer ${API_KEY}`,
+    },
+  });
+},
+updateTransaksi: async (id, data) => {
+  return await axios.patch(`${API_URL}?id=eq.${id}`, data, { headers });
 },
 
 

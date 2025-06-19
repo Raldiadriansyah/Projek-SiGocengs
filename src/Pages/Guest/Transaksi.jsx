@@ -1,3 +1,7 @@
+import { AiOutlineArrowLeft } from "react-icons/ai"; 
+import { AiOutlineArrowRight } from "react-icons/ai"; 
+import { FaRegEdit } from "react-icons/fa"; 
+import { RiDeleteBinLine } from "react-icons/ri"; 
 import { AiOutlineArrowUp } from "react-icons/ai"; 
 import { AiOutlineArrowDown } from "react-icons/ai"; 
 import { useEffect, useState } from "react";
@@ -9,6 +13,14 @@ import Swal from "sweetalert2";
 export default function Transaksi(){
     const [data, setData] = useState([]);
     const [dataSumber, setDataSumber] = useState([]);
+    const [editData, setEditData] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+
     const [newTransaksi, setNewTransaksi] = useState({
     saldo_id: "",
     jenis_transaksi: "masuk",
@@ -318,42 +330,287 @@ useEffect(() => {
 
 
 
-               <div className="overflow-auto w-full px-4 mt-6">
-                    <table className="min-w-[400px] w-full border border-gray-300 text-left text-sm">
-                    <thead className="bg-gray-100">
+               <div className="overflow-auto w-full px-6 mt-6">
+                    <table className="min-w-[400px] w-full border border-gray-300 text-left text-sm rounded-2">
+                    <thead className="bg-blue-100">
                         <tr>
                         <th className="px-4 py-2 border-b">No</th>
                         <th className="px-4 py-2 border-b">Tanggal</th>
                         <th className="px-4 py-2 border-b">Sumber</th>
                         <th className="px-4 py-2 border-b">Transaksi</th>
-                        <th className="px-4 py-2 border-b">Kebutuhan</th>
-                        <th className="px-4 py-2 border-b">Jumlah</th>
-                        <th className="px-4 py-2 border-b">Aksi</th>
+                        <th className="px-4 py-2 border-b ml-30">Kebutuhan</th>
+                        <th className="px-4 py-2 border-b ml-30">Jumlah</th>
+                        <th className="px-4 py-2 border-b w-40">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((item, index) => {
+                        {currentItems.map((item, index) => {
                             const sumber = dataSaldo.find(s => s.id === item.saldo_id)?.sumber || "Tidak Diketahui";
                             const kebutuhan = item.kebutuhan?.jenis_kebutuhan || "-";
                             const saldoItem = dataSaldo.find(s => s.id === item.saldo_id);
                             const sumberId = saldoItem?.sumber_id;
                             const sumberNama = dataSumber.find(s => s.id === sumberId)?.nama_sumber || "Tidak Diketahui";
 
+                            const handleEditClick = (item) => {
+                            setEditData({
+                                ...item,
+                                jumlah: item.jumlah,
+                                jenis_transaksi: item.jenis_transaksi,
+                                kebutuhan: item.kebutuhan?.id || "",
+                            });
+                            document.getElementById("edit_modal").showModal();
+                            };
+
+                            const handleSimpanEdit = async () => {
+                            try {
+                                const saldoItem = dataSaldo.find(s => s.id === editData.saldo_id);
+                                if (!saldoItem) {
+                                Swal.fire("Gagal", "Saldo tidak ditemukan", "error");
+                                return;
+                                }
+
+                                const transaksiLama = data.find(t => t.id === editData.id);
+                                if (!transaksiLama) {
+                                Swal.fire("Gagal", "Transaksi lama tidak ditemukan", "error");
+                                return;
+                                }
+
+                                const jumlahBaru = parseInt(editData.jumlah);
+                                const jumlahLama = transaksiLama.jumlah;
+                                const selisih = jumlahBaru - jumlahLama;
+
+                                let saldoFinal = saldoItem.saldo;
+
+                                if (editData.jenis_transaksi === "masuk") {
+                                saldoFinal += selisih;
+                                } else {
+                                saldoFinal -= selisih;
+                                }
+
+                                await transaksiAPI.updateTransaksi(editData.id, {
+                                jumlah: jumlahBaru,
+                                jenis_transaksi: editData.jenis_transaksi,
+                                kebutuhan: editData.jenis_transaksi === "masuk" ? null : parseInt(editData.kebutuhan),
+                                });
+
+                                await saldoAPI.updateSaldo(saldoItem.id, { saldo: saldoFinal });
+
+                                document.getElementById("edit_modal").close();
+
+                                Swal.fire({
+                                icon: "success",
+                                title: "Berhasil",
+                                text: "Transaksi berhasil diperbarui!",
+                                timer: 2000, 
+                                showConfirmButton: false,
+                                willClose: () => {
+                                    window.location.reload(); 
+                                },
+                                });
+
+                                const refreshed = await transaksiAPI.getAll();
+                                setData(refreshed);
+
+                            } catch (error) {
+                                console.error("Gagal edit:", error);
+                                Swal.fire("Gagal", "Terjadi kesalahan saat menyimpan", "error");
+                            }
+                            };
+
+
+
+
+                           const handleDelete = async (item) => {
+                            const confirm = await Swal.fire({
+                                title: 'Yakin ingin menghapus?',
+                                text: 'Data yang dihapus akan memengaruhi saldo.',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ya, hapus!',
+                                cancelButtonText: 'Batal',
+                            });
+
+                            if (confirm.isConfirmed) {
+                                try {
+                                const saldoItem = dataSaldo.find(s => s.id === item.saldo_id);
+                                if (!saldoItem) {
+                                    Swal.fire("Gagal", "Data saldo tidak ditemukan", "error");
+                                    return;
+                                }
+
+                                const saldoBaru = {
+                                    ...saldoItem,
+                                    saldo:
+                                    item.jenis_transaksi === "keluar"
+                                        ? saldoItem.saldo + item.jumlah 
+                                        : saldoItem.saldo - item.jumlah, 
+                                };
+
+                                await saldoAPI.updateSaldo(saldoBaru.id, { saldo: saldoBaru.saldo });
+
+                                await transaksiAPI.deleteTransaksi(item.id);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: 'Transaksi berhasil dihapus',
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                });
+
+                                const refreshed = await transaksiAPI.getAll();
+                                setData(refreshed);
+
+                                } catch (error) {
+                                console.error("Gagal menghapus transaksi:", error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Terjadi kesalahan saat menghapus transaksi.',
+                                });
+                                }
+                            }
+                            };
+
+
                             return (
                                 <tr key={item.id}>
-                                <td className="px-4 py-2 border-b">{index + 1}</td>
+                                <td className="px-4 py-2 border-b">{indexOfFirstItem + index + 1}</td>
                                 <td className="px-4 py-2 border-b">
                                     {new Date(item.created_at).toLocaleDateString("id-ID")}
                                 </td>
                                 <td className="px-4 py-2 border-b">{sumberNama}</td>
-                                <td className="px-4 py-2 border-b capitalize">{item.jenis_transaksi}</td>
+                                <td className="px-4 py-2 border-b">
+                                <div className="flex items-center gap-2 font-semibold">
+                                    {item.jenis_transaksi === "keluar" ? (
+                                    <>
+                                        <span className="text-red-600 capitalize">keluar</span>
+                                        <AiOutlineArrowUp className="text-red-600" />
+                                    </>
+                                    ) : (
+                                    <>
+                                        <span className="text-green-600 capitalize">masuk</span>
+                                        <AiOutlineArrowDown className="text-green-600" />
+                                    </>
+                                    )}
+                                </div>
+                                </td>
+
+
+
                                 <td className="px-4 py-2 border-b capitalize">{kebutuhan}</td>
                                 <td className="px-4 py-2 border-b">Rp. {item.jumlah.toLocaleString("id-ID")}</td>
+                                <td className="px-4 py-2 border-b">
+                                    <dialog id="edit_modal" className="modal">
+                                        <div className="modal-box">
+                                            <h3 className="font-bold text-lg mb-4">Edit Transaksi</h3>
+
+                                            {editData && (
+                                            <>
+                                                <label className="block mb-2">Jumlah</label>
+                                                <input
+                                                type="number"
+                                                className="input input-bordered w-full mb-4"
+                                                value={editData.jumlah}
+                                                onChange={(e) => setEditData({ ...editData, jumlah: parseInt(e.target.value) })}
+                                                />
+
+                                                <label className="block mb-2">Jenis Transaksi</label>
+                                                <select
+                                                className="select select-bordered w-full mb-4"
+                                                value={editData.jenis_transaksi}
+                                                 disabled
+                                                onChange={(e) =>
+                                                    setEditData({
+                                                    ...editData,
+                                                    jenis_transaksi: e.target.value,
+                                                    kebutuhan: e.target.value === "masuk" ? null : editData.kebutuhan,
+                                                    })
+                                                }
+                                                >
+                                                <option value="masuk">Masuk</option>
+                                                <option value="keluar">Keluar</option>
+                                                </select>
+
+                                                <label className="block mb-2">Kebutuhan</label>
+                                                <select
+                                                className="select select-bordered w-full mb-4"
+                                                value={editData.kebutuhan || ""}
+                                                onChange={(e) =>
+                                                    setEditData({ ...editData, kebutuhan: parseInt(e.target.value) })
+                                                }
+                                                disabled={editData.jenis_transaksi === "masuk"}
+                                                >
+                                                <option value="">
+                                                    {editData.jenis_transaksi === "masuk"
+                                                    ? "-- Tidak diperlukan --"
+                                                    : "-- Pilih Kebutuhan --"}
+                                                </option>
+                                                {dataBudget.map((item) => (
+                                                    <option key={item.id} value={item.id}>
+                                                    {item.jenis_kebutuhan}
+                                                    </option>
+                                                ))}
+                                                </select>
+
+                                                <div className="modal-action">
+                                                <form method="dialog">
+                                                    <button className="btn">Tutup</button>
+                                                </form>
+                                                <button className="btn btn-primary" onClick={handleSimpanEdit}>
+                                                    Simpan Perubahan
+                                                </button>
+                                                </div>
+                                            </>
+                                            )}
+                                        </div>
+                                        </dialog>
+
+                                   <div className="flex space-x-5">
+                                    <div className="bg-yellow-400 hover:bg-yellow-500 p-2 rounded-1 text-white cursor-pointer transition duration-300"
+                                    onClick={() => handleEditClick(item)}>
+                                        <FaRegEdit size={20} />
+                                    </div>
+
+                                    <div className="bg-red-500 hover:bg-red-600 p-2 rounded-1 text-white cursor-pointer transition duration-300"
+                                     onClick={() => handleDelete(item)}>
+                                        <RiDeleteBinLine size={20} />
+                                    </div>
+                                    </div>
+                                </td>
                                 </tr>
                             );
                             })}
-                        </tbody>
+                        </tbody>            
+
                     </table>
+                     {totalPages > 1 && (
+                        <div className="flex justify-center items-center mt-6 space-x-2 ">
+                            <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+                            >
+                            <AiOutlineArrowLeft size={25}/>
+                            </button>
+                            {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`px-3 py-1 rounded ${
+                                currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                                }`}
+                            >
+                                {i + 1}
+                            </button>
+                            ))}
+                            <button
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+                            >
+                            <AiOutlineArrowRight size={25}/>
+                            </button>
+                        </div>
+                        )}
                 </div>
              </div>
         </div>

@@ -39,3 +39,6 @@
 body {
     @apply font-poppins;
 }
+.recharts-wrapper *:focus {
+  outline: none;
+}

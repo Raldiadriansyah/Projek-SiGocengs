@@ -40,6 +40,24 @@ export const BudgetAPI = {
       return [];
     }
   },
- 
+
+  deleteBudget: async (id) => {
+    return await axios.delete(`${API_URL}?id=eq.${id}`, {
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    });
+  },
+
+  updateBudget: async (id, data) => {
+    return await axios.patch(`${API_URL}?id=eq.${id}`, data, {
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+  },
 
 }

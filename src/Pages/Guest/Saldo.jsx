@@ -1,22 +1,25 @@
 import { BiTrash } from "react-icons/bi"; 
 import { saldoAPI } from "../../assets/services/saldoAPI";
+import { sumberAPI } from "../../assets/services/sumberAPI";
 import { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 export default function Saldo() {
  const [dataSaldo, setDataSaldo] = useState([]);
  const [totalSaldo, setTotalSaldo] = useState(0);
- 
+ const [selectedSourceId, setSelectedSourceId] = useState(null);
+ const [selectedSourceName, setSelectedSourceName] = useState(""); 
  const [selectedSource, setSelectedSource] = useState("");
  const [saldo, setSaldo] = useState("");
  const [nominalBaru, setNominalBaru] = useState("");
+ const [sumberList, setSumberList] = useState([]);
 
-  const sumberList = [
-    { name: "BRI", image: "BRI.png" },
-    { name: "Mandiri", image: "Mandiri.png" },
-    { name: "Dana", image: "Dana.png" },
-    { name: "BRK", image: "BRK.png" },
-    { name: "BNI", image: "BNI.png" },
-  ];
+  useEffect(() => {
+    const loadSumber = async () => {
+      const result = await sumberAPI.fetchSumberList();
+      setSumberList(result);
+    };
+    loadSumber();
+  }, []);
 
   useEffect(() => {
   const fetchSaldoBySource = async () => {
@@ -25,7 +28,7 @@ export default function Saldo() {
     try {
       const userId = localStorage.getItem("userID");
       const response = await saldoAPI.fetchSaldoByUser(userId);
-      const selected = response.find((item) => item.sumber === selectedSource);
+      const selected = response.find((item) => item.sumber_id === selectedSource);
       if (selected) {
         setSaldo(selected.saldo);
       } else {
@@ -39,25 +42,34 @@ export default function Saldo() {
   fetchSaldoBySource();
 }, [selectedSource]);
 
-  useEffect(() => {
-    const getSaldo = async () => {
-      try {
-      const userId = localStorage.getItem("userID"); 
-        if (!userId) return;
+useEffect(() => {
+  const getSaldo = async () => {
+    try {
+      const userId = localStorage.getItem("userID");
+      if (!userId) return;
 
-        const data = await saldoAPI.fetchSaldoByUser(userId);
-        localStorage.setItem("dataSaldo", JSON.stringify(data));
-        setDataSaldo(data);
+      const saldoData = await saldoAPI.fetchSaldoByUser(userId); 
+      const sumberData = await sumberAPI.fetchSumberList();
 
-        const total = data.reduce((acc, item) => acc + (item.saldo || 0), 0);
-        setTotalSaldo(total);
-      } catch (err) {
-        console.error("Gagal mengambil data saldo:", err.message);
-      }
-    };
+      const combined = saldoData.map((item) => {
+        const sumberMatch = sumberData.find((s) => s.id === item.sumber_id);
+        return {
+          ...item,
+          nama_sumber: sumberMatch?.nama_sumber || "Tidak Diketahui",
+        };
+      });
 
-    getSaldo();
-  }, []);
+      setDataSaldo(combined);
+
+      const total = combined.reduce((acc, item) => acc + (item.saldo || 0), 0);
+      setTotalSaldo(total);
+    } catch (err) {
+      console.error("Gagal mengambil data saldo:", err.message);
+    }
+  };
+
+  getSaldo();
+}, []);
 
   const handleDelete = (id) => {
   Swal.fire({
@@ -98,31 +110,32 @@ export default function Saldo() {
             }}
           >
             {dataSaldo.map((item, index) => (
-              <div
-                key={index}
-                className="relative group bg-white p-4 rounded-lg shadow flex items-center gap-6 min-w-[230px] h-[100px]"
-              >
-                <img
-                  src={`img/${item.sumber}.png`}
-                  alt={item.sumber}
-                  className="w-14 h-14 object-contain"
-                />
-                <div>
-                  <h3 className="text-blue-600 font-bold text-[20px]">{item.sumber}</h3>
-                  <p className="text-gray-700 text-[18px]">
-                    Rp {item.saldo.toLocaleString()}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 hidden group-hover:block"
-                  title="Hapus"
-                >
-                  <BiTrash size={30} className="" />
-              </button>
+            <div
+              key={index}
+              className="relative group bg-white p-4 rounded-lg shadow flex items-center gap-6 min-w-[230px] h-[100px]"
+            >
+              <img
+                src={`img/${item.nama_sumber}.png`}
+                alt={item.nama_sumber}
+                className="w-14 h-14 object-contain"
+              />
+              <div>
+                <h3 className="text-blue-600 font-bold text-[20px]">{item.nama_sumber}</h3>
+                <p className="text-gray-700 text-[18px]">
+                  Rp {item.saldo.toLocaleString()}
+                </p>
               </div>
-            ))}
+
+              <button
+                onClick={() => handleDelete(item.id)}
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700 hidden group-hover:block"
+                title="Hapus"
+              >
+                <BiTrash size={30} />
+              </button>
+            </div>
+          ))}
+
           </div>
       </div>
      <div className="relative bg-white-500 shadow-md border-b border-gray-300 w-full rounded-3xl h-[600px] mt-[105px] items-center mx-auto">
@@ -133,32 +146,32 @@ export default function Saldo() {
                     e.preventDefault();
                     const userId = localStorage.getItem("userID");
 
-                    if (!selectedSource || !nominalBaru || parseInt(nominalBaru) < 0) {
-                      Swal.fire({
-                        icon: "warning",
-                        title: "Data tidak valid",
-                        text: "Pilih sumber dan masukkan nominal yang benar!",
-                      });
-                      return;
-                    }
+                if (!selectedSourceId || !nominalBaru || parseInt(nominalBaru) < 0) {
+                  Swal.fire({
+                    icon: "warning",
+                    title: "Data tidak valid",
+                    text: "Pilih sumber dan masukkan nominal yang benar!",
+                  });
+                  return;
+                }
 
-                    const isDuplicate = dataSaldo.some(item => item.sumber === selectedSource);
-                    if (isDuplicate) {
-                      Swal.fire({
-                        icon: "info",
-                        title: "Sumber Sudah Tersedia",
-                        text: `Data untuk sumber ${selectedSource} sudah ada.`,
-                      });
-                      return;
-                    }
+                const isDuplicate = dataSaldo.some(item => item.sumber_id === selectedSourceId);
+                if (isDuplicate) {
+                  Swal.fire({
+                    icon: "info",
+                    title: "Sumber Sudah Tersedia",
+                    text: `Data untuk sumber ${selectedSourceName} sudah ada.`,
+                  });
+                  return;
+                }
+
 
                     try {
                       const newEntry = {
                         user_id: userId,
-                        sumber: selectedSource,
+                        sumber_id: selectedSourceId,
                         saldo: parseInt(nominalBaru),
                       };
-
                       await saldoAPI.createSaldo(newEntry);
 
                       Swal.fire({
@@ -193,39 +206,44 @@ export default function Saldo() {
                         maxWidth: `${Math.min(sumberList.length, 5) * 240}px`, 
                       }}
                     >
-                      {sumberList.map((item, index) => (
-                        <label
-                          key={index}
-                          className={`cursor-pointer flex flex-col items-center border p-3 rounded-lg shadow-sm hover:shadow-md transition-all ${
-                            selectedSource === item.name ? "border-blue-500 bg-blue-50" : "border-gray-200"
-                          }`}
-                          onClick={() => setSelectedSource(item.name)}
-                        >
-                          <input
-                            type="radio"
-                            name="sumber"
-                            value={item.name}
-                            className="hidden"
-                            checked={selectedSource === item.name}
-                            readOnly
-                          />
-                          <img
-                            src={`img/${item.image}`}
-                            alt={item.name}
-                            className="w-16 h-16 object-contain mb-2"
-                          />
-                          <span className="text-[16px] font-medium text-black">{item.name}</span>
-                        </label>
-                      ))}
+                    { sumberList.map((item, index) => (
+                      <label
+                        key={index}
+                        className={`cursor-pointer flex flex-col items-center border p-3 rounded-lg shadow-sm hover:shadow-md transition-all ${
+                          selectedSourceId === item.id ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                        }`}
+                        onClick={() => {
+                          setSelectedSourceId(item.id);
+                          setSelectedSourceName(item.nama_sumber);
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="sumber"
+                          value={item.id}
+                          className="hidden"
+                          checked={selectedSourceId === item.id}
+                          readOnly
+                        />
+                        <img
+                          src={`img/${item.nama_sumber}.png`}
+                          alt={item.nama_sumber}
+                          className="w-16 h-16 object-contain mb-2"
+                        />
+                        <span className="text-[16px] font-medium text-black">{item.nama_sumber}</span>
+                      </label>
+                    ))}
+
                     </div>
-                    <input type="hidden" name="sumber" value={selectedSource} />
+                    <input type="hidden" name="sumber_id" value={selectedSourceId} />
+
 
                      <p className="text-black text-[18px] font-semibold mt-10 mb-2 ml-26">
                       Masukkan Nominal Saat Ini :
                       <input
                         type="number"
-                        value={nominalBaru}
-                        onChange={(e) => setNominalBaru(e.target.value)}                        
+                        value={nominalBaru ?? ""} 
+                        onChange={(e) => setNominalBaru(e.target.value ?? "")} 
                         className="border-2 border-blue-500 hover:border-blue-600 focus:border-blue-600 focus:outline-none rounded px-4 py-2 w-[1000px] mb-4 ml-13 text-blue-500"
                       />
                     </p>

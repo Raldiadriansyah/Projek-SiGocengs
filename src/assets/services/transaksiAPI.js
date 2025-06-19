@@ -11,12 +11,40 @@ const headers = {
 
 export const transaksiAPI = {
 getAll: async () => {
+    const response = await axios.get(API_URL, {
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      params: {
+  select: `
+    *,
+    saldo (
+      id,
+      sumber_id,
+      sumber (
+        id,
+        nama_sumber
+      )
+    ),
+    kebutuhan (
+      id,
+      jenis_kebutuhan
+    )
+  `,
+},
+    });
+    return response.data;
+  },
+
+
+  getTransaksi: async () => {
   try {
     const userId = localStorage.getItem("userID");
     if (!userId) throw new Error("User belum login");
 
     // Ambil saldo milik user
-    const saldoResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelSaldo", {
+    const saldoResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/Tabelsaldo", {
       headers,
       params: {
         select: "id",
@@ -48,15 +76,15 @@ getAll: async () => {
 
 
 
-  createTransaksi: async (data) => {
-    try {
-      const response = await axios.post(API_URL, data, {
-        headers,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Gagal membuat transaksi:", error);
-      throw error;
-    }
-  },
+ createTransaksi: async (data) => {
+  try {
+    console.log("Data yang dikirim:", data);
+    const response = await axios.post(API_URL, data, { headers }); 
+  } catch (error) {
+    console.error("Gagal membuat transaksi:", error.response?.data || error.message);
+    throw error;
+  }
+},
+
+
 }

@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { transaksiAPI } from "../../assets/services/transaksiAPI";
 import { saldoAPI } from "../../assets/services/saldoAPI";
 import { BudgetAPI } from "../../assets/services/budgetAPI";
+import { sumberAPI } from "../../assets/services/sumberAPI";
 import Swal from "sweetalert2";
 export default function Transaksi(){
     const [data, setData] = useState([]);
+    const [dataSumber, setDataSumber] = useState([]);
     const [newTransaksi, setNewTransaksi] = useState({
     saldo_id: "",
     jenis_transaksi: "masuk",
@@ -22,7 +24,18 @@ export default function Transaksi(){
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
-        const filtered = result.filter(item => {
+        // Dapatkan data saldo dan budget
+        const saldoList = JSON.parse(localStorage.getItem("dataSaldo")) || [];
+        const budgetList = await BudgetAPI.getAllByUser(localStorage.getItem("userID"));
+
+        // Gabungkan data relasi manual
+        const enriched = result.map((item) => {
+        const saldo = saldoList.find((s) => s.id === item.saldo_id);
+        const kebutuhan = budgetList.find((b) => b.id === item.kebutuhan);
+        return { ...item, saldo, kebutuhan };
+        });
+
+        const filtered = enriched.filter((item) => {
         const date = new Date(item.created_at);
         return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
         });
@@ -32,6 +45,7 @@ export default function Transaksi(){
 
     fetchData();
     }, []);
+
 
     const totalMasuk = data
     .filter((item) => item.jenis_transaksi === "masuk")
@@ -43,14 +57,24 @@ export default function Transaksi(){
 
     const [dataSaldo, setDataSaldo] = useState([]);
 
-    useEffect(() => {
-    const stored = localStorage.getItem("dataSaldo");
-    if (stored) {
-        setDataSaldo(JSON.parse(stored));
-    }
-    }, []);
+useEffect(() => {
+  fetchSaldoWithSumber();
+}, []);
+
 
     const [dataBudget, setDataBudget] = useState([]);
+
+    useEffect(() => {
+    const fetchSumber = async () => {
+        try {
+        const sumberList = await sumberAPI.getAll();
+        setDataSumber(sumberList);
+        } catch (error) {
+        console.error("Gagal mengambil data sumber:", error);
+        }
+    };
+    fetchSumber();
+    }, []);
 
    useEffect(() => {
     const fetchBudget = async () => {
@@ -67,6 +91,31 @@ export default function Transaksi(){
 
     fetchBudget();
     }, []);
+
+    const fetchSaldoWithSumber = async () => {
+  const userId = localStorage.getItem("userID");
+  if (!userId) return;
+
+  try {
+    const [saldoList, sumberList] = await Promise.all([
+      saldoAPI.fetchSaldoByUser(userId),
+      sumberAPI.getAll(),
+    ]);
+
+    const saldoWithSumber = saldoList.map((saldo) => {
+      const sumber = sumberList.find((s) => s.id === saldo.sumber_id);
+      return {
+        ...saldo,
+        nama_sumber: sumber ? sumber.nama_sumber : "Sumber tidak ditemukan",
+      };
+    });
+
+    setDataSaldo(saldoWithSumber);
+  } catch (error) {
+    console.error("Gagal memuat saldo dengan sumber:", error);
+  }
+};
+
 
 
 
@@ -95,7 +144,7 @@ export default function Transaksi(){
                     <h3 className="font-bold text-lg mb-4">Tambah Transaksi</h3>
 
                     {/* Pilih Sumber */}
-                    <label className="block mb-2">Pilih Sumber</label>
+                    <label className="block mb-2">Pilih Sumber</label>             
                     <select
                     className="select select-bordered w-full mb-4"
                     value={newTransaksi.saldo_id}
@@ -105,11 +154,13 @@ export default function Transaksi(){
                     >
                     <option value="">-- Pilih Sumber --</option>
                     {dataSaldo.map((s) => (
-                        <option key={s.id} value={s.id}>
-                        {s.sumber}
+                       <option key={s.id} value={Number(s.id)}>
+                        {s.nama_sumber}
                         </option>
                     ))}
                     </select>
+
+
 
                     {/* Jenis Transaksi */}
                     <label className="block mb-2">Jenis Transaksi</label>
@@ -169,93 +220,94 @@ export default function Transaksi(){
     <div className="modal-action">
       <form method="dialog" className="flex gap-2">
         <button className="btn">Close</button>
-        <button
+      <button
           type="button"
           className="btn btn-primary"
           onClick={async () => {
-            try {
-                const userId = localStorage.getItem("userID");
-                if (
-                !userId ||
-                !newTransaksi.saldo_id ||
-                newTransaksi.jumlah <= 0 ||
-                (newTransaksi.jenis_transaksi === "keluar" && !newTransaksi.kebutuhan)
-                ) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Peringatan",
-                    text: "Lengkapi semua data terlebih dahulu!",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-                return;
-                }
+                    try {
+                        const userId = localStorage.getItem("userID");
+                        if (
+                        !userId ||
+                        !newTransaksi.saldo_id ||
+                        newTransaksi.jumlah <= 0 ||
+                        (newTransaksi.jenis_transaksi === "keluar" && !newTransaksi.kebutuhan)
+                        ) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Peringatan",
+                            text: "Lengkapi semua data terlebih dahulu!",
+                            timer: 2000,
+                            showConfirmButton: false,
+                        });
+                        return;
+                        }
+        
+                        await transaksiAPI.createTransaksi({
+                        saldo_id: newTransaksi.saldo_id,
+                        jenis_transaksi: newTransaksi.jenis_transaksi,
+                        jumlah: newTransaksi.jumlah,
+                        kebutuhan: newTransaksi.jenis_transaksi === "masuk" ? null : newTransaksi.kebutuhan,
+                        created_at: new Date().toISOString(),
+                        });
+        
+                        const saldoItem = await saldoAPI.fetchSaldoByUser(localStorage.getItem("userID"))
+                         .then((list) => list.find((s) => s.id === newTransaksi.saldo_id));
 
-                await transaksiAPI.createTransaksi({
-                saldo_id: newTransaksi.saldo_id,
-                jenis_transaksi: newTransaksi.jenis_transaksi,
-                jumlah: newTransaksi.jumlah,
-                kebutuhan: newTransaksi.jenis_transaksi === "masuk" ? null : newTransaksi.kebutuhan,
-                created_at: new Date().toISOString(),
-                });
-
-                const saldoItem = dataSaldo.find((s) => s.id === newTransaksi.saldo_id);
-                if (!saldoItem) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Gagal",
-                    text: "Saldo tidak ditemukan",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-                return;
-                }
-
-                const updatedSaldo = {
-                ...saldoItem,
-                saldo:
-                    newTransaksi.jenis_transaksi === "masuk"
-                    ? saldoItem.saldo + newTransaksi.jumlah
-                    : saldoItem.saldo - newTransaksi.jumlah,
-                };
-
-                await saldoAPI.updateSaldo(updatedSaldo.id, updatedSaldo);
-
-                // Reset form dan tutup modal
-                setNewTransaksi({
-                saldo_id: "",
-                jenis_transaksi: "masuk",
-                jumlah: 0,
-                kebutuhan: "",
-                });
-
-                document.getElementById("my_modal_1").close();
-
-                // Tampilkan pesan sukses
-                Swal.fire({
-                icon: "success",
-                title: "Berhasil",
-                text: "Transaksi berhasil ditambahkan!",
-                timer: 2000,
-                showConfirmButton: false,
-                });
-
-                setTimeout(() => {
-                window.location.reload();
-                }, 2100);
-
-            } catch (error) {
-                console.error("Gagal menyimpan transaksi:", error);
-                Swal.fire({
-                icon: "error",
-                title: "Gagal",
-                text: "Terjadi kesalahan saat menyimpan transaksi.",
-                timer: 2000,
-                showConfirmButton: false,
-                });
-            }
-            }}
-
+                        if (!saldoItem) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: "Saldo tidak ditemukan",
+                            timer: 2000,
+                            showConfirmButton: false,
+                        });
+                        return;
+                        }
+        
+                        const updatedSaldo = {
+                        ...saldoItem,
+                        saldo:
+                            newTransaksi.jenis_transaksi === "masuk"
+                            ? saldoItem.saldo + newTransaksi.jumlah
+                            : saldoItem.saldo - newTransaksi.jumlah,
+                        };
+        
+                        await saldoAPI.updateSaldo(updatedSaldo.id, updatedSaldo);
+        
+                        // Reset form dan tutup modal
+                        setNewTransaksi({
+                        saldo_id: "",
+                        jenis_transaksi: "masuk",
+                        jumlah: 0,
+                        kebutuhan: "",
+                        });
+        
+                        document.getElementById("my_modal_1").close();
+        
+                        // Tampilkan pesan sukses
+                        Swal.fire({
+                        icon: "success",
+                        title: "Berhasil",
+                        text: "Transaksi berhasil ditambahkan!",
+                        timer: 2000,
+                        showConfirmButton: false,
+                        });
+        
+                        setTimeout(() => {
+                        window.location.reload();
+                        }, 2100);
+        
+                    } catch (error) {
+                        console.error("Gagal menyimpan transaksi:", error);
+                        Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: "Terjadi kesalahan saat menyimpan transaksi.",
+                        timer: 2000,
+                        showConfirmButton: false,
+                        });
+                    }
+                    }} 
         >
           Simpan
         </button>
@@ -283,6 +335,9 @@ export default function Transaksi(){
                         {data.map((item, index) => {
                             const sumber = dataSaldo.find(s => s.id === item.saldo_id)?.sumber || "Tidak Diketahui";
                             const kebutuhan = item.kebutuhan?.jenis_kebutuhan || "-";
+                            const saldoItem = dataSaldo.find(s => s.id === item.saldo_id);
+                            const sumberId = saldoItem?.sumber_id;
+                            const sumberNama = dataSumber.find(s => s.id === sumberId)?.nama_sumber || "Tidak Diketahui";
 
                             return (
                                 <tr key={item.id}>
@@ -290,7 +345,7 @@ export default function Transaksi(){
                                 <td className="px-4 py-2 border-b">
                                     {new Date(item.created_at).toLocaleDateString("id-ID")}
                                 </td>
-                                <td className="px-4 py-2 border-b">{sumber}</td>
+                                <td className="px-4 py-2 border-b">{sumberNama}</td>
                                 <td className="px-4 py-2 border-b capitalize">{item.jenis_transaksi}</td>
                                 <td className="px-4 py-2 border-b capitalize">{kebutuhan}</td>
                                 <td className="px-4 py-2 border-b">Rp. {item.jumlah.toLocaleString("id-ID")}</td>

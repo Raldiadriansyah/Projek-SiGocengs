@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/Tabelsaldo"
+const API_URL = "https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelSumber"
 const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzZnd6eG9jcmd5eGRnZm5jZ3pwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2Mjk0NTIsImV4cCI6MjA2NTIwNTQ1Mn0.9ArDHoEfESVxGTbDuuZSW7-gJzQ5601Xo_XD-5_SuJI"
 
 const headers = {
@@ -9,26 +9,36 @@ const headers = {
     "Content-Type": "application/json",
 }
 
-export const saldoAPI = {
-    async fetchSaldoByUser(userId) {
-    const response = await axios.get(`${API_URL}?user_id=eq.${userId}`, { headers });
+export const sumberAPI = {
+
+    fetchSumberList: async () => {
+    const response = await axios.get(API_URL, {
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    });
     return response.data;
-    }
-    ,
-    async createSaldo(data) {
+  },
+   
+    async createSumber(data) {
         return await axios.post(API_URL, data, { headers });
     },
 
-    deleteSaldo: async (id) => {
+    deleteSumber: async (id) => {
     const response = await axios.delete(`${API_URL}?id=eq.${id}`, {
         headers,
     });
     return response.data;
     },
 
-   updateSaldo: async (id, updatedData) => {
+   updateSumber: async (id, updatedData) => {
     return await axios.patch(`${API_URL}?id=eq.${id}`, updatedData, {
         headers,
     });
     },  
+    getAll: async () => {
+    const response = await axios.get(API_URL, { headers });
+    return response.data;
+  },
 }

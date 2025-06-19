@@ -30,7 +30,7 @@ export default function Budget() {
 
   useEffect(() => {
     const fetchTransaksi = async () => {
-      const result = await transaksiAPI.getAll();
+      const result = await transaksiAPI.getTransaksi();
       setTransaksiData(result);
     };
 

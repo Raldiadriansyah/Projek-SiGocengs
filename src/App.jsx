@@ -16,6 +16,12 @@ const Saldo = React.lazy(() => import("./Pages/Guest/Saldo"));
 const Transaksi = React.lazy(() => import("./Pages/Guest/Transaksi"));
 const Budget = React.lazy(() => import("./Pages/Guest/Budget"));
 const Guest = React.lazy(() => import("./Layouts/Guest"));
+const AdminLayout = React.lazy(() => import("./Layouts/AdminLayout"));
+const BerandaAdmin = React.lazy(() => import("./Pages/Admin/Beranda"));
+const ManajemenSumber = React.lazy(() => import("./Pages/Admin/ManajemenSumber"));
+const ManajemenUser = React.lazy(() => import("./Pages/Admin/ManajemenUser"));
+const ManajemenTestimmoni = React.lazy(() => import("./Pages/Admin/ManajemenTestimoni"));
+const ManajemenFAQ = React.lazy(() => import("./Pages/Admin/ManajemenFAQ"));
 
 
 function App() {
@@ -37,6 +43,13 @@ function App() {
             <Route path="/Saldo" element={<Saldo/>}/>
             <Route path="/Transaksi" element={<Transaksi/>}/>
             <Route path="/Kelola-Budget" element={<Budget/>}/>
+        </Route>              
+        <Route element={<AdminLayout />}>
+            <Route path="/BerandaAdmin" element={<BerandaAdmin/>}/>
+            <Route path="/ManajemenSumber" element={<ManajemenSumber/>}/>
+            <Route path="/ManajemenUser" element={<ManajemenUser/>}/>
+            <Route path="/ManajemenTestimoni" element={<ManajemenTestimmoni/>}/>
+            <Route path="/ManajemenFAQ" element={<ManajemenFAQ/>}/>
         </Route>              
       </Routes>
     </Suspense>

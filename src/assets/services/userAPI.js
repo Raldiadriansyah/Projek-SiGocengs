@@ -17,5 +17,14 @@ export const userAPI = {
     async createUser(data){
         const response = await axios.post(API_URL, data, {headers})
         return response.data
-    }
+    },
+    async fetchUser2() {
+    const response = await axios.get(`${API_URL}?role=eq.user`, { headers });
+    return response.data;
+    },
+    deleteUser: async (userId) => {
+    return await axios.delete(`${API_URL}?id=eq.${userId}`, {
+        headers,
+    });
+    },
 }

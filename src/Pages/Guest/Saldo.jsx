@@ -56,6 +56,7 @@ useEffect(() => {
         return {
           ...item,
           nama_sumber: sumberMatch?.nama_sumber || "Tidak Diketahui",
+          Gambar: sumberMatch?.Gambar || "",
         };
       });
 
@@ -115,7 +116,7 @@ useEffect(() => {
               className="relative group bg-white p-4 rounded-lg shadow flex items-center gap-6 min-w-[230px] h-[100px]"
             >
               <img
-                src={`img/${item.nama_sumber}.png`}
+                src={item.Gambar}
                 alt={item.nama_sumber}
                 className="w-14 h-14 object-contain"
               />
@@ -226,7 +227,7 @@ useEffect(() => {
                           readOnly
                         />
                         <img
-                          src={`img/${item.nama_sumber}.png`}
+                          src={item.Gambar}
                           alt={item.nama_sumber}
                           className="w-16 h-16 object-contain mb-2"
                         />

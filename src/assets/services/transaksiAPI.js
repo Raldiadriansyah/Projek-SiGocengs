@@ -126,6 +126,13 @@ deleteTransaksi: async (id) => {
 updateTransaksi: async (id, data) => {
   return await axios.patch(`${API_URL}?id=eq.${id}`, data, { headers });
 },
-
+fetchAllTransaksi: async () => {
+    const response = await axios.get(API_URL, { headers });
+    return response.data;
+  },
+   deleteBySaldoId: async (saldoId) => {
+    const res = await axios.delete(`${API_URL}?saldo_id=eq.${saldoId}`, { headers });
+    return res.data;
+  },
 
 }

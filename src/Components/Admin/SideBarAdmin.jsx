@@ -1,10 +1,8 @@
+import { AiFillBank } from "react-icons/ai"; 
 import { BsMicrosoftTeams } from "react-icons/bs"; 
 import { FaQuestion } from "react-icons/fa"; 
 import { MdReviews } from "react-icons/md"; 
 import { CgUserList } from "react-icons/cg"; 
-import { HiClipboardList } from "react-icons/hi"; 
-import { GrTransaction } from "react-icons/gr"; 
-import { BsCoin } from "react-icons/bs"; 
 import { BiHome } from "react-icons/bi"; 
 import { NavLink } from "react-router-dom";
 
@@ -28,7 +26,7 @@ export default function SidebarAdmin({ isOpen }) {
                     </li>
                     <li>
                         <NavLink id="menu-2" to="ManajemenSumber" className={menuClass}>
-                            <BsCoin  size={30} className="min-w-[30px]" />
+                            <AiFillBank size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen Sumber</span>}
                         </NavLink>
                     </li>

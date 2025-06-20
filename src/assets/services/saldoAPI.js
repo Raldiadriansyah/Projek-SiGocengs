@@ -31,4 +31,13 @@ export const saldoAPI = {
         headers,
     });
     },  
+
+    fetchAllSaldo: async () => {
+    const response = await axios.get(API_URL, { headers });
+    return response.data;
+    },
+    deleteByUserId: async (userId) => {
+    const res = await axios.delete(`${API_URL}?user_id=eq.${userId}`, { headers });
+    return res.data;
+  },
 }

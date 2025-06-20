@@ -21,24 +21,49 @@ export const sumberAPI = {
     return response.data;
   },
    
-    async createSumber(data) {
-        return await axios.post(API_URL, data, { headers });
-    },
+async createSumber(data) {
+  return await axios.post(API_URL, data, {
+    headers,
+    validateStatus: () => true, 
+  });
+},
 
-    deleteSumber: async (id) => {
-    const response = await axios.delete(`${API_URL}?id=eq.${id}`, {
-        headers,
-    });
-    return response.data;
+   deleteSumber: async (id) => {
+  const response = await axios.delete(`${API_URL}?id=eq.${id}`, {
+    headers: {
+      apikey: API_KEY,
+      Authorization: `Bearer ${API_KEY}`,
     },
+  });
+  return response.data;
+},
 
-   updateSumber: async (id, updatedData) => {
-    return await axios.patch(`${API_URL}?id=eq.${id}`, updatedData, {
-        headers,
-    });
-    },  
+
+   updateSumber: async (id, data) => {
+  return axios.patch(`${API_URL}?id=eq.${id}`, data, {
+    headers: {
+      apikey: API_KEY,
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+  });
+},
+ 
     getAll: async () => {
     const response = await axios.get(API_URL, { headers });
     return response.data;
   },
+insertSumber: async (data) => {
+  const response = await axios.post(
+    API_URL,
+    [data],
+    { headers }
+  );
+  return response.data;
+},
+
+
+
+  
 }

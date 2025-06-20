@@ -44,7 +44,7 @@ export default function header({ toggleSidebar }){
                 <h1 className="ml-20 font-poppins-extrabold font-[1000] text-[28px] text-blue-600">SiGocengs </h1>
                 <div className="flex items-center ml-5 mt-2 space-x-2">
                     <h1 className="text-[28px]">/</h1>
-                    <p className="ml-3 text-[20px] mt-1">{pageTitle}</p>
+                    <p className="text-xl font-bold whitespace-nowrap">{pageTitle}</p>
                 </div>
 
                 <div className="flex justify-end text-right w-full dropdown dropdown-bottom dropdown-end">

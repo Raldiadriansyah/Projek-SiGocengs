@@ -59,5 +59,10 @@ export const BudgetAPI = {
       },
     });
   },
+    deleteByUserId: async (userId) => {
+    return await axios.delete(`${API_URL}?user_id=eq.${userId}`, {
+      headers,
+    });
+  },
 
 }

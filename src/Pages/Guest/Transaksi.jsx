@@ -600,7 +600,7 @@ useEffect(() => {
                                 currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
                                 }`}
                             >
-                                {i + 1}
+                                {i + 1}`    `
                             </button>
                             ))}
                             <button

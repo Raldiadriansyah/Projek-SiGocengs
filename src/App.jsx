@@ -22,6 +22,7 @@ const ManajemenSumber = React.lazy(() => import("./Pages/Admin/ManajemenSumber")
 const ManajemenUser = React.lazy(() => import("./Pages/Admin/ManajemenUser"));
 const ManajemenTestimmoni = React.lazy(() => import("./Pages/Admin/ManajemenTestimoni"));
 const ManajemenFAQ = React.lazy(() => import("./Pages/Admin/ManajemenFAQ"));
+const ManajemenTim = React.lazy(() => import("./Pages/Admin/ManajemenTim"));
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
         <Route element={<AdminLayout />}>
             <Route path="/BerandaAdmin" element={<BerandaAdmin/>}/>
             <Route path="/ManajemenSumber" element={<ManajemenSumber/>}/>
+            <Route path="/ManajemenTim" element={<ManajemenTim/>}/>
             <Route path="/ManajemenUser" element={<ManajemenUser/>}/>
             <Route path="/ManajemenTestimoni" element={<ManajemenTestimmoni/>}/>
             <Route path="/ManajemenFAQ" element={<ManajemenFAQ/>}/>

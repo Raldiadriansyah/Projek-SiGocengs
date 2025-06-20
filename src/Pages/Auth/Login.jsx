@@ -10,24 +10,31 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try {
-      const users = await userAPI.fetchUser();
-      const user = users.find(
-        (u) => u.email === email && u.password === password
-      );
+  try {
+    const users = await userAPI.fetchUser();
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
 
-     if (user) {
-        localStorage.setItem("userName", user.nama || "User");
-        localStorage.setItem("userID", user.id.toString());
-        navigate("/Beranda");
+    if (user) {      
+      localStorage.setItem("userName", user.nama || "User");
+      localStorage.setItem("userID", user.id.toString());
+      localStorage.setItem("userRole", user.role); 
+     
+      if (user.role === "admin") {
+        navigate("/BerandaAdmin");
       } else {
-        setMessage("Email atau password salah!");
+        navigate("/Beranda");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setMessage("Gagal mengakses server.");
+    } else {
+      setMessage("Email atau password salah!");
     }
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+    setMessage("Gagal mengakses server.");
+  }
+};
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl overflow-hidden w-[950px] max-w-6xl h-[410px] shadow-xl group transition-all duration-500 ease-in-out">

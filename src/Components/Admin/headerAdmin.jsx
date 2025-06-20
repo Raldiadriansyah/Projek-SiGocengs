@@ -3,7 +3,7 @@ import { CgProfile } from "react-icons/cg";
 import { AiOutlineMenu } from "react-icons/ai"; 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-export default function header({ toggleSidebar }){
+export default function headerAdmin({ toggleSidebar }){
     const [userName, setUserName] = useState("");
     const location = useLocation();
     const currentPath = location.pathname.split("/")[1];

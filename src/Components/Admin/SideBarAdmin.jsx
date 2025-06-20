@@ -1,3 +1,7 @@
+import { BsMicrosoftTeams } from "react-icons/bs"; 
+import { FaQuestion } from "react-icons/fa"; 
+import { MdReviews } from "react-icons/md"; 
+import { CgUserList } from "react-icons/cg"; 
 import { HiClipboardList } from "react-icons/hi"; 
 import { GrTransaction } from "react-icons/gr"; 
 import { BsCoin } from "react-icons/bs"; 
@@ -29,20 +33,26 @@ export default function SidebarAdmin({ isOpen }) {
                         </NavLink>
                     </li>
                     <li>
+                        <NavLink id="menu-3" to="ManajemenTim" className={menuClass}>
+                          <BsMicrosoftTeams size={30} className="min-w-[30px]"/>
+                            {isOpen && <span className="ml-5">Manajemen Tim</span>}
+                        </NavLink>
+                    </li>
+                    <li>
                         <NavLink id="menu-4" to="ManajemenUser" className={menuClass}>
-                            <HiClipboardList size={30} className="min-w-[30px]" />
+                            <CgUserList size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen User</span>}
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-3" to="ManajemenTestimmoni" className={menuClass}>
-                            <GrTransaction size={30} className="min-w-[30px]" />
+                        <NavLink id="menu-3" to="ManajemenTestimoni" className={menuClass}>
+                           <MdReviews size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen Testimoni</span>}
                         </NavLink>
                     </li>
                     <li>
                         <NavLink id="menu-3" to="ManajemenFAQ" className={menuClass}>
-                            <GrTransaction size={30} className="min-w-[30px]" />
+                           <FaQuestion size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen FAQ</span>}
                         </NavLink>
                     </li>

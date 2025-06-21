@@ -11,15 +11,20 @@ export default function Login() {
 
   const handleLogin = async () => {
   try {
-    const users = await userAPI.fetchUser();
-    const user = users.find(
+    const allUsers = await userAPI.fetchUser();
+    const user = allUsers.find(
       (u) => u.email === email && u.password === password
     );
+    const adminUser = allUsers.find((u) => u.role === "admin");
 
-    if (user) {      
+    if (user) {  
+      if (adminUser) {
+        localStorage.setItem("adminName", adminUser.nama || "Admin");
+      }     
       localStorage.setItem("userName", user.nama || "User");
       localStorage.setItem("userID", user.id.toString());
       localStorage.setItem("userRole", user.role); 
+      localStorage.setItem("userMail", user.email);  
      
       if (user.role === "admin") {
         navigate("/BerandaAdmin");

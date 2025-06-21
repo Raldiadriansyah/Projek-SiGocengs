@@ -31,12 +31,6 @@ export default function SidebarAdmin({ isOpen }) {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink id="menu-3" to="ManajemenTim" className={menuClass}>
-                          <BsMicrosoftTeams size={30} className="min-w-[30px]"/>
-                            {isOpen && <span className="ml-5">Manajemen Tim</span>}
-                        </NavLink>
-                    </li>
-                    <li>
                         <NavLink id="menu-4" to="ManajemenUser" className={menuClass}>
                             <CgUserList size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen User</span>}
@@ -52,6 +46,12 @@ export default function SidebarAdmin({ isOpen }) {
                         <NavLink id="menu-3" to="ManajemenFAQ" className={menuClass}>
                            <FaQuestion size={30} className="min-w-[30px]"/>
                             {isOpen && <span className="ml-5">Manajemen FAQ</span>}
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink id="menu-3" to="ManajemenTim" className={menuClass}>
+                          <BsMicrosoftTeams size={30} className="min-w-[30px]"/>
+                            {isOpen && <span className="ml-5">Manajemen Tim</span>}
                         </NavLink>
                     </li>
                 </ul>

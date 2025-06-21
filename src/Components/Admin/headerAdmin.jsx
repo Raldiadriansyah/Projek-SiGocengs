@@ -21,7 +21,7 @@ export default function headerAdmin({ toggleSidebar }){
 
 
     useEffect(() => {
-        const name = localStorage.getItem("userName");
+        const name = localStorage.getItem("adminName");
         setUserName(name || "User");
     }, []);
 

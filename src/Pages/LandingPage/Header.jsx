@@ -13,8 +13,8 @@ export default function Header() {
   const items = [
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
-    { label: 'Review', href: '/testimoni' },
-    { label: 'Contact', href: '#section-support' },
+    { label: 'Review', href: '#testimoni' },
+    { label: 'Berlangganan', href: '#berlangganan' },
   ];
 
   return (

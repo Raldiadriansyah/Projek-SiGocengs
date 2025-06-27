@@ -38,19 +38,19 @@ const testimonials = [
 
 const features = [
   {
+    title: "Analisis keuangan",
+    description: "Pantau keuangan harian, mingguan, dan bulanan.",
+    icon: <FaChartLine className="text-white text-4xl" />,
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
     title: "Transaksi Harian",
     description: "Catat pemasukan dan pengeluaran dengan cepat dan mudah.",
     icon: <FaMoneyCheckAlt className="text-white text-4xl" />,
     color: "from-purple-500 to-indigo-600",
   },
   {
-    title: "Laporan & Analisis",
-    description: "Pantau laporan keuangan harian, mingguan, dan bulanan.",
-    icon: <FaChartLine className="text-white text-4xl" />,
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    title: "Manajemen Anggaran",
+    title: "Manajemen Budget",
     description: "Tetapkan batas pengeluaran & kelola target menabung.",
     icon: <FaPiggyBank className="text-white text-4xl" />,
     color: "from-green-500 to-emerald-500",
@@ -192,7 +192,7 @@ export default function Hero() {
                 <p className="text-sm opacity-90">Countries Coverage</p>
               </div>
             </div>
-          </motion.div>
+          </motion.div>          
 
           {/* Right */}
           <motion.div
@@ -210,28 +210,8 @@ export default function Hero() {
             </div>
           </motion.div>
         </div>
-      </section>
-
-      <div className="bg-gradient-to-br from-blue-100 to-purple-200 py-8">
-        <ScrollVelocity
-          texts={[
-            <>
-              <FaMoneyBillWave className="inline-block mr-2 text-blue-700" />
-              Kelola keuangan lebih cerdas dengan SiGocengs Atur anggaran & raih target menabung
-            </>,
-            <>
-              <FaChartLine className="inline-block mr-2 text-indigo-700" />
-              Pantau laporan keuangan mingguan & bulanan Dapatkan pengingat transaksi otomatis
-            </>,
-          ]}
-          velocity={80}
-          numCopies={4}
-        />
-      </div>
-
-      {/* SECTION BAWAH: FEATURES */}
-      <div className="bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 dark:text-white transition-colors duration-500 pt-10 pb-20">
-        <motion.div
+        <div className="mt-15">
+           <motion.div
           id="features"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto mb-10 md:mb-16 lg:mb-20"
           initial={{ opacity: 0 }}
@@ -254,10 +234,9 @@ export default function Hero() {
             </motion.div>
           ))}
         </motion.div>
-
-      {/* Testimonials */}
-      <motion.div
-        className="max-w-3xl mx-auto bg-primary text-primary-content rounded-2xl p-8 shadow-md text-center relative overflow-hidden mb-9"
+        <div>
+           <motion.div
+        className="max-w-3xl mx-auto bg-primary text-primary-content rounded-2xl p-8 shadow-md text-center relative overflow-hidden mb-5"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -277,9 +256,36 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* About & Testimoni */}
+        </div>
+        </div>
+
+      </section>
+      
+
+      <div className="bg-gradient-to-br from-blue-100 to-purple-200 py-8">
+        <ScrollVelocity
+          texts={[
+            <>
+              <FaMoneyBillWave className="inline-block mr-2 text-blue-700" />
+              Kelola keuangan lebih cerdas dengan SiGocengs Atur anggaran & raih target menabung
+            </>,
+            <>
+              <FaChartLine className="inline-block mr-2 text-indigo-700" />
+              Pantau laporan keuangan mingguan & bulanan Dapatkan pengingat transaksi otomatis
+            </>,
+          ]}
+          velocity={80}
+          numCopies={4}
+        />
+      </div>
+
+      {/* SECTION BAWAH: FEATURES */}
+      <div className="bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 dark:text-white transition-colors duration-500 pt-10 pb-20">
+       
+
+     
       <About />
-      <Berlangganan />
+   
       <Testimoni />
 
 

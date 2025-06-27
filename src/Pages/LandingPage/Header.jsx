@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import GooeyNav from '../../Components/GooeyNav';
 
 export default function Header() {
@@ -13,14 +13,14 @@ export default function Header() {
   const items = [
     { label: 'Home', href: '#home' },
     { label: 'About', href: '#about' },
-    { label: 'Review', href: '#testimoni' },
-    { label: 'Berlangganan', href: '#berlangganan' },
+    { label: 'Question', href: '#Question' },
+    { label: 'Testimoni', href: '#Testimoni' },
   ];
 
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/30 backdrop-blur-md' : 'bg-transparent'
+        isScrolled ? 'bg-transparent backdrop-blur-md' :  'bg-white shadow-md'
       }`}
     >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-3 md:py-4">

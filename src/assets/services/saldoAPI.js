@@ -40,4 +40,17 @@ export const saldoAPI = {
     const res = await axios.delete(`${API_URL}?user_id=eq.${userId}`, { headers });
     return res.data;
   },
+
+fetchSaldoWithSumberByUser: async (userId) => {
+  const response = await axios.get(API_URL, {
+    headers,
+    params: {
+      select: "id,jumlah,sumber_id,TabelSumber(id,nama_sumber)", // pakai nama relasi sesuai foreign key
+      user_id: `eq.${userId}`,
+    },
+  });
+  return response.data;
+}
+
+
 }

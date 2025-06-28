@@ -245,7 +245,7 @@ useEffect(() => {
                         type="number"
                         value={nominalBaru ?? ""} 
                         onChange={(e) => setNominalBaru(e.target.value ?? "")} 
-                        className="border-2 border-blue-500 hover:border-blue-600 focus:border-blue-600 focus:outline-none rounded px-4 py-2 w-[1000px] mb-4 ml-13 text-blue-500"
+                        className="border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition rounded px-4 py-2 w-[1000px] mb-4 ml-13 text-blue-500"
                       />
                     </p>
                     <br />

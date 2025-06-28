@@ -233,7 +233,7 @@ export default function Budget() {
                 <label className="label">Jenis Kebutuhan</label>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   value={formData.jenis_kebutuhan}
                   onChange={(e) => setFormData({ ...formData, jenis_kebutuhan: e.target.value })}
                 />
@@ -243,7 +243,7 @@ export default function Budget() {
                 <label className="label">Anggaran (Rp)</label>
                 <input
                   type="number"
-                  className="input input-bordered w-full"
+                  className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   value={formData.anggaran}
                   onChange={(e) => setFormData({ ...formData, anggaran: e.target.value })}
                 />
@@ -251,7 +251,7 @@ export default function Budget() {
 
               <div className="modal-action flex justify-end gap-2">
                 <form method="dialog">
-                  <button className="btn btn-outline">Tutup</button>
+                  <button className="btn ">Tutup</button>
                 </form>
                 <button className="btn btn-primary" onClick={handleTambahBudget}>
                   Simpan
@@ -263,7 +263,7 @@ export default function Budget() {
       </div>
 
         {budgetData.length === 0 ? (
-        <p className="text-gray-600">Tidak ada data budget.</p>
+        <p className="text-gray-600 ml-20">Tidak ada data budget.</p>
           ) : (
             <div className="ml-10">
               <div className="max-h-[720px] overflow-y-auto pr-2 space-y-6">
@@ -330,17 +330,17 @@ export default function Budget() {
               <label className="block mb-2">Jenis Kebutuhan</label>
               <input
                 type="text"
-                className="input input-bordered w-full mb-4"
+                className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 value={editData.jenis_kebutuhan}
                 onChange={(e) =>
                   setEditData({ ...editData, jenis_kebutuhan: e.target.value })
                 }
               />
 
-              <label className="block mb-2">Anggaran</label>
+              <label className="block mb-2 mt-4">Anggaran</label>
               <input
                 type="number"
-                className="input input-bordered w-full mb-4"
+                className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition "
                 value={editData.anggaran}
                 onChange={(e) =>
                   setEditData({ ...editData, anggaran: parseFloat(e.target.value) })

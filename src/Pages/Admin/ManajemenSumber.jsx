@@ -10,14 +10,14 @@ export default function ManajemenSumber() {
   const [dataSumber, setDataSumber] = useState([]);
   const [editData, setEditData] = useState(null);
 
+ const [searchTerm, setSearchTerm] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const totalPages = Math.ceil(dataSumber.length / itemsPerPage);
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = dataSumber.slice(indexOfFirstItem, indexOfLastItem);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
   
 
   useEffect(() => {
@@ -106,8 +106,16 @@ export default function ManajemenSumber() {
 
       await sumberAPI.insertSumber(newSumber);
 
-      Swal.fire("Sukses", "Data sumber berhasil ditambahkan", "success");
-      fetchSumber();
+       Swal.fire({
+               icon: "success",
+               title: "Berhasil",
+               text: "Data Sumber Berhasil Ditambahkan",
+               timer: 2000,
+               showConfirmButton: false,
+               willClose: () => {
+                 window.location.reload();
+               },
+             }); 
       document.getElementById("modal_sumber").close();
 
       setFormInput({ nama_sumber: "", deskripsi: "", Gambar: "" });
@@ -144,13 +152,21 @@ const handleUpdateSumber = async () => {
     const updatePayload = {
       nama_sumber: editData.nama_sumber,
       deskripsi: editData.deskripsi,
-      Gambar: editData.Gambar || "", // PENTING: pakai huruf besar
+      Gambar: editData.Gambar || "", 
     };
 
     await sumberAPI.updateSumber(editData.id, updatePayload);
 
-    Swal.fire("Sukses", "Data berhasil diperbarui", "success");
-    fetchSumber();
+    Swal.fire({
+               icon: "success",
+               title: "Berhasil",
+               text: "Data Berhasil Diubah",
+               timer: 2000,
+               showConfirmButton: false,
+               willClose: () => {
+                 window.location.reload();
+               },
+             }); 
     document.getElementById("modal_edit_sumber").close();
   } catch (error) {
     console.error("Gagal update:", error);
@@ -192,8 +208,16 @@ const handleDelete = async (item) => {
   if (confirm.isConfirmed) {
     try {
       await sumberAPI.deleteSumber(item.id);
-      Swal.fire("Terhapus!", "Data sumber berhasil dihapus.", "success");
-      fetchSumber(); 
+      Swal.fire({
+               icon: "success",
+               title: "Berhasil",
+               text: "Transaksi berhasil dihapus",
+               timer: 2000,
+               showConfirmButton: false,
+               willClose: () => {
+                 window.location.reload();
+               },
+             }); 
     } catch (error) {
       console.error("Gagal hapus data:", error);
       Swal.fire("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
@@ -201,20 +225,42 @@ const handleDelete = async (item) => {
   }
 };
 
+const filteredData = dataSumber.filter((item) =>
+    item.nama_sumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
 
   return (
     <div className="relative bg-blue-500 shadow-md border-b border-gray-300 w-full rounded-b-3xl h-[500px] mt-[-15px]">
-      <div className="font-poppins text-center pt-8 space-x-90">
-        <div className="text-[36px] font-semibold text-white leading-tight">
-          <div className="absolute top-[100px] left-[5%] z-20 ml-5 mt-5">
-            <button
-              className="btn bg-blue-400 hover:bg-blue-500 text-white"
+      <div className="font-poppins text-center pt-8 ">
+        <div className="text-[36px] text-center font-semibold text-white leading-tight">
+           Kelola Sumber Dana
+        </div>
+        <div className="text-[36px] font-semibold text-white leading-tight ">
+          <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-[90%]  z-20 ml-5 mt-5 ">
+            <div className="flex">
+              <button
+              className="btn bg-blue-400 hover:bg-blue-500 text-white mt-3 ml-2"
               onClick={() => document.getElementById("modal_sumber").showModal()}
             >
               Tambah Sumber
-            </button>
+            </button>          
+             <div className="flex justify-end item-right px-6 mt-3 w-500 mr-5 text-black">
+            <input
+              type="text"
+              placeholder="Cari transaksi..."
+              className="input input-bordered w-full max-w-[600px] border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+            </div>
           </div>
 
           <dialog id="modal_sumber" className="modal text-black text-left">
@@ -228,7 +274,7 @@ const handleDelete = async (item) => {
                     name="nama_sumber"
                     value={formInput.nama_sumber}
                     onChange={handleInputChange}
-                    className="input input-bordered w-full"
+                    className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     placeholder="Masukkan nama sumber"
                     required
                   />
@@ -241,7 +287,7 @@ const handleDelete = async (item) => {
                     rows="3"
                     value={formInput.deskripsi}
                     onChange={handleInputChange}
-                    className="textarea textarea-bordered w-full"
+                    className="textarea border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     placeholder="Masukkan deskripsi"
                     required
                   ></textarea>
@@ -256,7 +302,7 @@ const handleDelete = async (item) => {
                     accept="image/jpeg,image/png"
                     name="Gambar" 
                     onChange={handleInputChange}
-                    className="file-input file-input-bordered w-full"
+                    className="file-input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
                 </div>
 
@@ -266,7 +312,7 @@ const handleDelete = async (item) => {
                     className="btn"
                     onClick={() => document.getElementById("modal_sumber").close()}
                   >
-                    Batal
+                    Tutup
                   </button>
                   <button
                     type="button"
@@ -332,7 +378,7 @@ const handleDelete = async (item) => {
                                       onChange={(e) =>
                                         setEditData({ ...editData, nama_sumber: e.target.value })
                                       }
-                                      className="input input-bordered w-full"
+                                      className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                     />
                                   </div>
 
@@ -344,7 +390,7 @@ const handleDelete = async (item) => {
                                       onChange={(e) =>
                                         setEditData({ ...editData, deskripsi: e.target.value })
                                       }
-                                      className="textarea textarea-bordered w-full"
+                                      className="textarea border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                     ></textarea>
                                   </div>
                                   <div>
@@ -361,7 +407,7 @@ const handleDelete = async (item) => {
                                     type="file"
                                     accept="image/*"
                                     onChange={handleEditImageChange}
-                                    className="file-input file-input-bordered w-full"
+                                    className="file-input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                   />                                 
 
                                 </div>
@@ -372,7 +418,7 @@ const handleDelete = async (item) => {
                                       className="btn"
                                       onClick={() => document.getElementById("modal_edit_sumber").close()}
                                     >
-                                      Batal
+                                      Tutup
                                     </button>
                                     <button
                                       type="button"

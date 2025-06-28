@@ -154,7 +154,7 @@ export default function Dashboard() {
           <BsCoin size={60} className="text-yellow-600" />
           <div className="ml-8">
             <p className="text-gray-700 font-semibold">Sumber Dana Anda</p>
-            <p className="text-blue-500 font-bold text-lg">
+            <p className="text-yellow-500 font-bold text-lg">
               {jumlahSumber} sumber
             </p>
           </div>
@@ -213,7 +213,7 @@ export default function Dashboard() {
         {/* Grafik Tren Transaksi */}
         <div className="bg-white rounded-xl shadow p-6 w-full lg:basis-1/2 h-[600px]">
           <h2 className="text-xl font-bold text-gray-700 mb-10 mt-5">
-            Tren Total Transaksi Masuk & Keluar
+            Total Transaksi Masuk & Keluar
           </h2>
           <ResponsiveContainer width="100%" height="80%">
             <BarChart

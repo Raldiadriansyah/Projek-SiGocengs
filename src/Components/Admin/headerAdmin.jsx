@@ -58,7 +58,7 @@ export default function headerAdmin({ toggleSidebar }){
                      <li>
                         <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 border border-blue-300 rounded text-center text-[18px] justify-center font-medium hover:bg-blue-100 hover:text-blue-600 transition-all duration-200"
+                        className="w-full flex items-center gap-2 text-red-300 border border-red-300 rounded text-center text-[18px] justify-center font-medium hover:bg-red-100 hover:text-red-600 transition-all duration-200"
                         >
                         <MdLogout size={20} /> Keluar
                         </button>

@@ -9,21 +9,42 @@ import Swal from "sweetalert2";
 
 export default function ManajemenTestimoni() {
   const [dataTestimoni, setDataTestimoni] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+const [searchTerm, setSearchTerm] = useState("");
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 9;
+
+useEffect(() => {
+  setCurrentPage(1); 
+}, [searchTerm]);
+
+const filteredData = dataTestimoni.filter((item) => {
+  const namaUser = item.user?.nama?.toLowerCase() || "";
+  const isiTestimoni = item.testimoni?.toLowerCase() || "";
+  const status = item.status?.toLowerCase() || "";
+
+  return (
+    namaUser.includes(searchTerm.toLowerCase()) ||
+    isiTestimoni.includes(searchTerm.toLowerCase()) ||
+    status.includes(searchTerm.toLowerCase())
+  );
+});
+
+const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+const indexEnd = currentPage * itemsPerPage;
+const indexStart = indexEnd - itemsPerPage;
+const currentData = filteredData.slice(indexStart, indexEnd);
+
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
         const [tData, uData] = await Promise.all([
           testimoniAPI.fetchTestimoni(),
-          userAPI.fetchUser(), // Ambil semua user
+          userAPI.fetchUser(), 
         ]);
 
-        // Filter hanya user dengan role "user"
         const usersFiltered = uData.filter((u) => u.role === "user");
 
-        // Join testimoni dengan user
         const merged = tData.map((t) => {
           const relatedUser = usersFiltered.find(
             (u) => Number(u.id) === Number(t.user_id)
@@ -45,7 +66,7 @@ export default function ManajemenTestimoni() {
 
   const handleUpdateStatus = async (item, newStatus) => {
     const actionText =
-      newStatus === "tampilkan" ? "menampilkan" : "menyembunyikan";
+      newStatus === "ditampilkan" ? "menampilkan" : "menyembunyikan";
 
     const result = await Swal.fire({
       title: `Yakin ingin ${actionText} testimoni ini?`,
@@ -61,18 +82,21 @@ export default function ManajemenTestimoni() {
     if (result.isConfirmed) {
       try {
         await testimoniAPI.updateStatus(item.id, newStatus);
-        // Perbarui state lokal
+     
         setDataTestimoni((prev) =>
           prev.map((t) => (t.id === item.id ? { ...t, status: newStatus } : t))
         );
 
-        // SweetAlert sukses
+
         Swal.fire({
           icon: "success",
           title: "Berhasil!",
           text: `Status testimoni berhasil diubah menjadi "${newStatus}"`,
           timer: 1800,
           showConfirmButton: false,
+          willClose: () => {
+             window.location.reload();
+          },
         });
       } catch (error) {
         console.error("Gagal update status:", error);
@@ -110,6 +134,9 @@ export default function ManajemenTestimoni() {
           text: "Testimoni telah dihapus.",
           timer: 1800,
           showConfirmButton: false,
+          willClose: () => {
+             window.location.reload();
+          },
         });
       } catch (error) {
         console.error("Gagal hapus testimoni:", error);
@@ -118,17 +145,25 @@ export default function ManajemenTestimoni() {
     }
   };
 
-  const totalPages = Math.ceil(dataTestimoni.length / itemsPerPage);
-  const indexEnd = currentPage * itemsPerPage;
-  const indexStart = indexEnd - itemsPerPage;
-  const currentData = dataTestimoni.slice(indexStart, indexEnd);
 
   return (
     <div className="relative bg-blue-500 shadow-md border-b border-gray-300 w-full rounded-b-3xl h-[500px] mt-[-15px]">
-      <div className="flex justify-center font-poppins text-center pt-8 space-x-90">
+      <div className="flex justify-center font-poppins text-center pt-8 ">
+        <div className="text-[36px] font-semibold text-white leading-tight">
+          Testimoni - Ulasan Pengguna
+        </div>
         <div className="text-[36px] font-semibold text-white leading-tight">
           <div className="absolute top-[110px] left-1/2 transform -translate-x-1/2 w-[90%] bg-blue-50 rounded-xl shadow-lg h-[740px] z-10">
             <div className="overflow-auto w-full px-6 mt-5">
+              <div className="flex justify-end mb-4 text-black">
+               <input
+              type="text"
+              placeholder="Cari Data Testimoni..."
+              className="input input-bordered w-full max-w-[600px] border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-500 transition"
+              value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+            />
+              </div>
               <table className="min-w-[400px] w-full border border-gray-300 text-left text-sm rounded-2 text-black">
                 <thead className="bg-blue-100">
                   <tr>

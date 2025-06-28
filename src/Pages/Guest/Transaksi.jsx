@@ -44,6 +44,7 @@ const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 const indexOfLastItem = currentPage * itemsPerPage;
 const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
   const [newTransaksi, setNewTransaksi] = useState({
     saldo_id: "",
     jenis_transaksi: "masuk",

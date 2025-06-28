@@ -38,6 +38,9 @@ export default function ManajemenFAQ() {
         text: "FAQ berhasil ditambahkan.",
         timer: 2000,
         showConfirmButton: false,
+         willClose: () => {
+             window.location.reload();
+          },
       });
 
       // Reset form jika perlu
@@ -88,6 +91,9 @@ export default function ManajemenFAQ() {
         text: "FAQ berhasil diperbarui.",
         timer: 2000,
         showConfirmButton: false,
+         willClose: () => {
+             window.location.reload();
+          },
       });
 
       setEditingFAQ(null);
@@ -125,6 +131,9 @@ export default function ManajemenFAQ() {
         text: "Data FAQ berhasil dihapus.",
         timer: 2000,
         showConfirmButton: false,
+         willClose: () => {
+             window.location.reload();
+          },
       });
 
       fetchFAQ(); // Refresh data
@@ -170,7 +179,7 @@ export default function ManajemenFAQ() {
               <label className="label">Pertanyaan</label>
               <input
                 type="text"
-                className="input input-bordered w-full"
+                className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 value={formData.pertanyaan}
                 onChange={(e) =>
                   setFormData({ ...formData, pertanyaan: e.target.value })
@@ -181,7 +190,7 @@ export default function ManajemenFAQ() {
             <div className="form-control mb-4">
               <label className="label">Jawaban</label>
               <textarea
-                className="textarea textarea-bordered w-full"
+                className="textarea border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 rows="4"
                 value={formData.jawaban}
                 onChange={(e) =>
@@ -262,7 +271,7 @@ export default function ManajemenFAQ() {
             <label className="label">Pertanyaan</label>
             <input
               type="text"
-              className="input input-bordered w-full"
+              className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={formData.pertanyaan}
               onChange={(e) =>
                 setFormData({ ...formData, pertanyaan: e.target.value })
@@ -273,7 +282,7 @@ export default function ManajemenFAQ() {
           <div className="form-control mb-4">
             <label className="label">Jawaban</label>
             <textarea
-              className="textarea textarea-bordered w-full"
+              className="textarea border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               rows="4"
               value={formData.jawaban}
               onChange={(e) =>
@@ -282,7 +291,7 @@ export default function ManajemenFAQ() {
             ></textarea>
           </div>
           <select
-            className="select select-bordered w-full"
+            className="select border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             value={formData.status}
             onChange={(e) =>
               setFormData({ ...formData, status: e.target.value })

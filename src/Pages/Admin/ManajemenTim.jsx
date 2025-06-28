@@ -102,6 +102,9 @@ export default function ManajemenTim(){
                 text: "Data tim berhasil diperbarui.",
                 timer: 1800,
                 showConfirmButton: false,
+                willClose: () => {
+                 window.location.reload();
+               },
             });
         } catch (err) {
             console.error("Gagal update data tim:", err);
@@ -113,7 +116,10 @@ export default function ManajemenTim(){
 
     return(
         <div className="relative bg-blue-500 shadow-md border-b border-gray-300 w-full rounded-b-3xl h-[500px] mt-[-15px]">
-            <div className="flex justify-center font-poppins text-center pt-8 space-x-90 ">
+            <div className="flex justify-center font-poppins text-center pt-8 ">
+                <div className="text-[36px] font-semibold text-white leading-tight">
+                    Developer - Tim Pengembang
+                </div>
                 <div className="text-[36px] font-semibold text-white leading-tight">
                       <div className="absolute top-[110px] left-1/2 transform -translate-x-1/2 w-[90%] bg-blue-50 rounded-xl shadow-lg h-[740px] z-10">
                         <div className="relative flex text-black  justify-center space-x-14">
@@ -157,7 +163,7 @@ export default function ManajemenTim(){
                                 name="nama"
                                 value={editData.nama}
                                 onChange={handleEditInputChange}
-                                className="input input-bordered w-full"
+                                className="input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                 required
                                 />
                             </div>
@@ -168,7 +174,7 @@ export default function ManajemenTim(){
                                 name="keterangan"
                                 value={editData.keterangan}
                                 onChange={handleEditInputChange}
-                                className="textarea textarea-bordered w-full"
+                                className="textarea border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                 rows={3}
                                 required
                                 ></textarea>
@@ -181,7 +187,7 @@ export default function ManajemenTim(){
                                 name="foto"
                                 accept="image/jpeg, image/png"
                                 onChange={handleEditImageChange}
-                                className="file-input file-input-bordered w-full"
+                                className="file-input border-blue-400 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                                 />
                             </div>
 
@@ -191,7 +197,7 @@ export default function ManajemenTim(){
                                 className="btn"
                                 onClick={() => document.getElementById("modal_edit_tim").close()}
                                 >
-                                Batal
+                                Tutup
                                 </button>
                                 <button
                                 type="button"

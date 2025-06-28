@@ -287,7 +287,7 @@ export default function Beranda() {
 
           {/* Pie FAQ */}
           <div className="bg-white rounded-xl shadow p-6 w-full">
-            <h2 className="text-xl font-bold text-gray-700 mb-4">Status FAQ</h2>
+            <h2 className="text-xl font-bold text-gray-700 mb-4">Kelola FAQ</h2>
             <ResponsiveContainer width="80%" height={200}>
               <PieChart>
                 <Pie

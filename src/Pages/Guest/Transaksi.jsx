@@ -205,7 +205,7 @@ const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
         icon: "success",
         title: "Berhasil",
         text: "Transaksi berhasil diperbarui!",
-        timer: 2000,
+        timer: 1400,
         showConfirmButton: false,
         willClose: () => {
           window.location.reload();

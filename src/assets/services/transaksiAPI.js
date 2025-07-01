@@ -150,7 +150,7 @@ getAll2: async () => {
     });
 
     const saldoIds = saldoResponse.data.map((s) => s.id);
-    if (saldoIds.length === 0) return { masuk: 0, keluar: 0 };
+    if (saldoIds.length === 0) return { masukData: [], keluarData: [] };
 
     // Filter transaksi berdasarkan saldo_id
     const orFilter = saldoIds.map(id => `saldo_id.eq.${id}`).join(",");
@@ -158,23 +158,24 @@ getAll2: async () => {
     const transaksiResponse = await axios.get("https://usfwzxocrgyxdgfncgzp.supabase.co/rest/v1/TabelTransaksi", {
       headers,
       params: {
-        select: "id, jenis_transaksi, saldo_id",
+        select: "id, jenis_transaksi, saldo_id, created_at",
         or: `(${orFilter})`,
       },
     });
 
     const transaksi = transaksiResponse.data;
 
-    // Hitung jumlah transaksi masuk & keluar
-    const masuk = transaksi.filter((t) => t.jenis_transaksi === "masuk").length;
-    const keluar = transaksi.filter((t) => t.jenis_transaksi === "keluar").length;
+    // Bagi data masuk dan keluar
+    const masukData = transaksi.filter((t) => t.jenis_transaksi === "masuk");
+    const keluarData = transaksi.filter((t) => t.jenis_transaksi === "keluar");
 
-    return { masuk, keluar };
+    return { masukData, keluarData };
   } catch (error) {
-    console.error("Gagal mengambil jumlah transaksi masuk & keluar:", error?.response?.data || error.message);
-    return { masuk: 0, keluar: 0 };
+    console.error("Gagal mengambil transaksi:", error?.response?.data || error.message);
+    return { masukData: [], keluarData: [] };
   }
 },
+
 
 getRekapBulanan: async (userId) => {
   try {
@@ -215,34 +216,31 @@ getRekapBulanan: async (userId) => {
 
     data.forEach((t) => {
       const date = new Date(t.created_at);
-      const bulan = date.toLocaleString("id-ID", { month: "short", year: "numeric" }); // e.g. "Jun 2025"
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; // contoh: "2025-07"
+      const label = date.toLocaleString("id-ID", { month: "short", year: "numeric" }); // contoh: "Jul 2025"
 
-      if (!rekap[bulan]) {
-        rekap[bulan] = { bulan, masuk: 0, keluar: 0 };
+      if (!rekap[key]) {
+        rekap[key] = { bulan: label, masuk: 0, keluar: 0 };
       }
 
       const jumlah = parseFloat(t.jumlah) || 0;
       if (t.jenis_transaksi === "masuk") {
-        rekap[bulan].masuk += jumlah;
+        rekap[key].masuk += jumlah;
       } else if (t.jenis_transaksi === "keluar") {
-        rekap[bulan].keluar += jumlah;
+        rekap[key].keluar += jumlah;
       }
     });
 
-    // 5. Return hasil dalam array terurut berdasarkan waktu
-    return Object.values(rekap).sort((a, b) => {
-      const [bulanA, tahunA] = a.bulan.split(" ");
-      const [bulanB, tahunB] = b.bulan.split(" ");
-      const dateA = new Date(`1 ${bulanA} ${tahunA}`);
-      const dateB = new Date(`1 ${bulanB} ${tahunB}`);
-      return dateA - dateB;
-    });
-
+    // 5. Return hasil dalam array terurut berdasarkan kunci YYYY-MM
+    return Object.entries(rekap)
+      .sort(([a], [b]) => new Date(a + '-01') - new Date(b + '-01'))
+      .map(([_, value]) => value);
+      
   } catch (error) {
     console.error("Gagal mengambil rekap bulanan:", error.response?.data || error.message);
     return [];
   }
-},
+}
 
 
 

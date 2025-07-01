@@ -30,16 +30,29 @@ export default function Budget() {
     fetchBudget();
   }, []);
 
-  const [transaksiData, setTransaksiData] = useState([]);
+const [transaksiData, setTransaksiData] = useState([]);
 
-  useEffect(() => {
-    const fetchTransaksi = async () => {
-      const result = await transaksiAPI.getTransaksi();
-      setTransaksiData(result);
-    };
+useEffect(() => {
+  const fetchTransaksi = async () => {
+    const result = await transaksiAPI.getTransaksi();
 
-    fetchTransaksi();
-  }, []);
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const filtered = result.filter((item) => {
+      const date = new Date(item.tanggal || item.created_at); 
+      return (
+        date.getMonth() === currentMonth &&
+        date.getFullYear() === currentYear
+      );
+    });
+
+    setTransaksiData(filtered);
+  };
+
+  fetchTransaksi();
+}, []);
 
   const hitungTotalKeluarByBudget = (budgetId) => {
   const transaksiKeluar = transaksiData.filter(

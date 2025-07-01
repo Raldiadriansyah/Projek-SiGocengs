@@ -31,44 +31,63 @@ export default function Dashboard() {
   const [sumberData, setSumberData] = useState([]);
   const [trendData, setTrendData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userId = localStorage.getItem("userID");
-        if (!userId) {
-          console.error("User belum login");
-          return;
-        }
-
-        const [saldoUser, budgetData, transaksiCounts] = await Promise.all([
-          saldoAPI.fetchSaldoByUser(userId),
-          BudgetAPI.getAll(),
-          transaksiAPI.getAll2(), // hasilnya { masuk, keluar }
-        ]);
-
-        // Hitung sumber_id unik
-        const sumberUnik = [...new Set(saldoUser.map((s) => s.sumber_id))];
-        setJumlahSumber(sumberUnik.length);
-
-        // Filter data budget berdasarkan user
-        const budgetUser = budgetData.filter(
-          (b) => String(b.user_id) === userId
-        );
-        setTotalBudget(budgetUser.length);
-
-        // Set data transaksi masuk dan keluar dari transaksiCounts
-        setTotalMasuk(transaksiCounts.masuk);
-        setTotalKeluar(transaksiCounts.keluar);
-      } catch (error) {
-        console.error(
-          "Gagal mengambil data dashboard:",
-          error.response?.data || error.message || error
-        );
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const userId = localStorage.getItem("userID");
+      if (!userId) {
+        console.error("User belum login");
+        return;
       }
-    };
 
-    fetchData();
-  }, []);
+      const [saldoUser, budgetData, transaksiCounts] = await Promise.all([
+        saldoAPI.fetchSaldoByUser(userId),
+        BudgetAPI.getAll(),
+        transaksiAPI.getAll2(), 
+      ]);
+
+      const sumberUnik = [...new Set(saldoUser.map((s) => s.sumber_id))];
+      setJumlahSumber(sumberUnik.length);
+
+      const budgetUser = budgetData.filter(
+        (b) => String(b.user_id) === userId
+      );
+      setTotalBudget(budgetUser.length);
+
+ const now = new Date();
+const currentMonth = now.getMonth();
+const currentYear = now.getFullYear();
+
+const isCurrentMonth = (createdAt) => {
+  const date = new Date(createdAt);
+  return (
+    date.getMonth() === currentMonth &&
+    date.getFullYear() === currentYear
+  );
+};
+
+const totalMasuk = transaksiCounts.masukData.filter((t) =>
+  isCurrentMonth(t.created_at)
+).length;
+
+const totalKeluar = transaksiCounts.keluarData.filter((t) =>
+  isCurrentMonth(t.created_at)
+).length;
+
+setTotalMasuk(totalMasuk);
+setTotalKeluar(totalKeluar);
+
+    } catch (error) {
+      console.error(
+        "Gagal mengambil data dashboard:",
+        error.response?.data || error.message || error
+      );
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   useEffect(() => {
     const fetchSumberChart = async () => {
@@ -84,7 +103,7 @@ export default function Dashboard() {
         const sumberGrouped = saldoData.reduce((acc, curr) => {
           const sumber = sumberList.find((s) => s.id === curr.sumber_id);
           const nama = sumber?.nama_sumber || "Lainnya";
-          const jumlah = parseFloat(curr.saldo) || 0; // ✅ gunakan curr.saldo
+          const jumlah = parseFloat(curr.saldo) || 0; 
           acc[nama] = (acc[nama] || 0) + jumlah;
           return acc;
         }, {});
@@ -106,28 +125,33 @@ export default function Dashboard() {
     fetchSumberChart();
   }, []);
 
-  useEffect(() => {
-    const fetchTrendData = async () => {
-      try {
-        const userId = localStorage.getItem("userID");
-        if (!userId) return;
+ useEffect(() => {
+  const fetchTrendData = async () => {
+    try {
+      const userId = localStorage.getItem("userID");
+      if (!userId) return;
 
-        const trend = await transaksiAPI.getRekapBulanan(userId);
+      const trend = await transaksiAPI.getRekapBulanan(userId);
 
-        // Optional: urutkan bulan
-        const orderedTrend = trend.sort(
-          (a, b) =>
-            new Date(`1 ${a.bulan} 2025`) - new Date(`1 ${b.bulan} 2025`)
-        );
+      // Ambil bulan & tahun saat ini
+      const now = new Date();
+      const currentMonth = now.toLocaleString("id-ID", { month: "short" });
+      const currentYear = now.getFullYear();
 
-        setTrendData(orderedTrend);
-      } catch (error) {
-        console.error("Gagal mengambil trend transaksi:", error.message);
-      }
-    };
+      // Filter hanya data bulan sekarang
+      const filteredTrend = trend.filter((item) =>
+        item.bulan === `${currentMonth} ${currentYear}`
+      );
 
-    fetchTrendData();
-  }, []);
+      setTrendData(filteredTrend);
+    } catch (error) {
+      console.error("Gagal mengambil trend transaksi:", error.message);
+    }
+  };
+
+  fetchTrendData();
+}, []);
+
 
   const COLORS = [
     "#3B82F6", // biru
@@ -173,7 +197,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-6 shadow-md flex items-center">
           <AiOutlineArrowDown size={60} className="text-green-600" />
           <div className="ml-8">
-            <p className="text-gray-700 font-semibold">Transaksi Masuk</p>
+            <p className="text-gray-700 font-semibold">Transaksi Masuk / Bulan</p>
             <p className="text-green-500 font-bold text-lg">{totalMasuk}</p>
           </div>
         </div>
@@ -181,7 +205,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-6 shadow-md flex items-center">
           <AiOutlineArrowUp size={60} className="text-red-600" />
           <div className="ml-8">
-            <p className="text-gray-700 font-semibold">Transaksi Keluar</p>
+            <p className="text-gray-700 font-semibold">Transaksi Keluar / Bulan</p>
             <p className="text-red-500 font-bold text-lg">{totalKeluar}</p>
           </div>
         </div>
@@ -213,7 +237,7 @@ export default function Dashboard() {
         {/* Grafik Tren Transaksi */}
         <div className="bg-white rounded-xl shadow p-6 w-full lg:basis-1/2 h-[600px]">
           <h2 className="text-xl font-bold text-gray-700 mb-10 mt-5">
-            Total Transaksi Masuk & Keluar
+            Total Transaksi Masuk & Keluar -- bulan ini 
           </h2>
           <ResponsiveContainer width="100%" height="80%">
             <BarChart

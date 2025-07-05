@@ -24,6 +24,10 @@ const ManajemenUser = React.lazy(() => import("./Pages/Admin/ManajemenUser"));
 const ManajemenTestimmoni = React.lazy(() => import("./Pages/Admin/ManajemenTestimoni"));
 const ManajemenFAQ = React.lazy(() => import("./Pages/Admin/ManajemenFAQ"));
 const ManajemenTim = React.lazy(() => import("./Pages/Admin/ManajemenTim"));
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+
 
 
 function App() {

@@ -1,35 +1,11 @@
-import React, { useState } from "react";
-import CircularGallery from "../../Components/CircularGallery";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Slider from "react-slick";
 import { testimoniAPI } from "../../assets/services/testimoniAPI";
 import { userAPI } from "../../assets/services/userAPI";
-import { FAQAPI } from "../../assets/services/FAQAPI";
-import { useEffect } from "react";
-
+import { FaStar, FaHeart } from "react-icons/fa";
 
 export default function Testimoni() {
-const [faqs, setFaqs] = useState([]);
-
-const fetchFAQ = async () => {
-  try {
-    const result = await FAQAPI.fetchFAQ();
-    const filtered = result.filter((item) => item.status === "ditampilkan");
-    setFaqs(
-      filtered.map((item) => ({
-        question: item.pertanyaan,
-        answer: item.jawaban,
-      }))
-    );
-  } catch (error) {
-    console.error("Gagal mengambil data FAQ:", error);
-  }
-};
-
-useEffect(() => {
-  fetchFAQ();
-}, []);
-
-  const [selected, setSelected] = useState(null);
   const [dataTestimoni, setDataTestimoni] = useState([]);
 
   useEffect(() => {
@@ -39,13 +15,10 @@ useEffect(() => {
           testimoniAPI.fetchTestimoni(),
           userAPI.fetchUser(),
         ]);
-
-        // Filter hanya user dengan role "user"
         const usersFiltered = uData.filter((u) => u.role === "user");
 
-        // Join testimoni dengan user, dan hanya ambil testimoni yang status = 'tampilkan'
         const merged = tData
-          .filter((t) => t.status === "ditampilkan") // Filter berdasarkan status
+          .filter((t) => t.status === "ditampilkan")
           .map((t) => {
             const relatedUser = usersFiltered.find(
               (u) => Number(u.id) === Number(t.user_id)
@@ -65,113 +38,115 @@ useEffect(() => {
     fetchAll();
   }, []);
 
-  const galleryItems = dataTestimoni.map((item) => ({
-    name: item.user?.nama || "Anonim",
-    testimonial: item.testimoni || "Tidak ada testimoni.",
-  }));
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    arrows: false,
+  };
+
+  const renderStars = (count = 4) => {
+    return [...Array(count)].map((_, idx) => (
+      <FaStar key={idx} className="text-yellow-400 inline mr-1" />
+    ));
+  };
 
   return (
-    <section
-      id="Question"
-      className="w-full py-20 bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 overflow-hidden"
+    <motion.section
+      className="py-20 bg-blue-100 text-gray-800"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
     >
-   {/* Heading */}
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
+      <motion.h1
+        className="text-3xl font-bold text-center mb-12"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="max-w-6xl mx-auto px-4 text-center mb-12"
+        transition={{ duration: 0.6 }}
       >
-        <h2 className="text-3xl font-bold mb-4">  Pertanyaan Umum Seputar Manajemen Keuangan SiGocengs</h2>
-      
-      </motion.div>
+        Testimoni Pengguna
+      </motion.h1>
 
-      {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-4 mt-15">
+      {/* Monitor/Bingkai Card */}
+      <div className="max-w-3xl mx-auto relative">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="card bg-white shadow-xl border border-gray-200"
-        >
-          <div className="card-body">           
-
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {faqs.map((faq, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelected(i)}
-                  className={`btn btn-sm rounded-full transition ${
-                    selected === i ? "btn-primary text-white" : "btn-outline"
-                  }`}
-                >
-                  {faq.question}
-                </button>
-              ))}
-              <button
-                onClick={() => setSelected(null)}
-                className="btn btn-sm btn-neutral rounded-full"
-              >
-                Tampilkan Semua
-              </button>
-            </div>
-
-            {/* FAQ Chat Bubble */}
-            <div className="flex flex-col gap-6">
-              {(selected !== null ? [faqs[selected]] : faqs).map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: selected !== null ? 0 : index * 0.15,
-                  }}
-                  className="space-y-2"
-                >
-                  <div className="chat chat-start">
-                    <div className="chat-bubble chat-bubble-primary text-sm px-4 py-3 max-w-xs sm:max-w-md text-white font-semibold">
-                      {faq.question}
-                    </div>
-                  </div>
-                  <div className="chat chat-end">
-                    <div className="chat-bubble bg-gray-100 text-gray-800 text-sm px-4 py-3 max-w-xs sm:max-w-md">
-                      {faq.answer}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-      <div id="Testimoni" className="py-20 px-4 text-black">
-        <motion.h1 className="text-3xl font-bold text-center mb-20 mt-20">
-          Testimoni Pengguna
-        </motion.h1>
-
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
+          className="bg-white rounded-3xl p-6 shadow-2xl border-4 border-gray-300 relative z-10"
+          style={{ borderRadius: "2rem", minHeight: "420px" }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-          style={{ height: "600px", position: "relative" }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="flex flex-wrap justify-center gap-6 ">
+          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-2 bg-gray-500 rounded"></div>
+
+          <Slider {...settings}>
             {dataTestimoni.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-black text-white w-64 h-72 rounded-xl p-4 flex flex-col justify-between shadow-lg"
-              >
-                <p className="text-sm italic">"{item.testimoni}"</p>
-                <h4 className="text-center mt-4 font-semibold">
-                  {item.user?.nama || "Anonim"}
-                </h4>
+              <div key={idx} className="flex justify-center items-center px-4 py-4">
+                <motion.div
+                  className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-auto border border-gray-200 hover:shadow-xl transition duration-300"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.1 }}
+                >
+                  {/* Ikon hati animasi pulse */}
+                  <div className="absolute -top-5 right-5 z-20 animate-pulse">
+                    <div className="bg-blue-400 rounded-xl shadow p-3">
+                      <FaHeart className="text-white text-xl" />
+                    </div>
+                  </div>
+
+                  {/* Avatar animasi bounce */}
+                  <motion.div
+                    className="flex justify-center mb-3"
+                    initial={{ y: -10 }}
+                    animate={{ y: 0 }}
+                    transition={{ type: "spring", stiffness: 120, delay: 0.2 }}
+                  >
+                    <div className="avatar">
+                      <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <img
+                          src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${item.user?.nama || "anonim"}`}
+                          alt="avatar"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Nama dan rating */}
+                  <h3 className="text-center font-bold text-lg mb-1">{item.user?.nama || "Anonim"}</h3>
+
+                  <motion.div
+                    className="flex justify-center mb-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {renderStars(4 + (idx % 2))}
+                  </motion.div>
+
+                  {/* Isi testimoni */}
+                  <motion.p
+                    className="text-center text-sm italic text-gray-700 leading-relaxed"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    "{item.testimoni}"
+                  </motion.p>
+                </motion.div>
               </div>
             ))}
-          </div>
+          </Slider>
         </motion.div>
+
+        {/* Hiasan bawah */}
+        <div className="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 h-2 w-32 bg-blue-400 rounded-full z-0" />
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -117,7 +117,7 @@ export const ScrollVelocity = ({
 
     return (
       <div
-        className={`relative overflow-hidden backdrop-blur-md bg-gradient-to-br from-blue-100 to-purple-200 ${parallaxClassName}`}
+        className={`relative overflow-hidden backdrop-blur-md bg-gray-900 ${parallaxClassName}`}
         style={{
           ...parallaxStyle,
         }}
@@ -137,7 +137,7 @@ export const ScrollVelocity = ({
       {texts.map((text, index) => (
         <VelocityText
           key={index}
-          className="text-3xl md:text-5xl font-bold px-6 py-4 text-shadow-gray-300"
+          className="text-3xl md:text-5xl font-bold px-6 py-4 text-white"
           baseVelocity={index % 2 !== 0 ? -velocity : velocity}
           scrollContainerRef={scrollContainerRef}
           damping={damping}

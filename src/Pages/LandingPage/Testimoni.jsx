@@ -76,7 +76,10 @@ export default function Testimoni() {
   };
 
   return (
-    <section className="w-full py-20 bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 overflow-hidden">
+    <div>
+    <section
+    id="Question"
+    className="w-full py-20 bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
@@ -144,10 +147,13 @@ export default function Testimoni() {
             </div>
           </div>
         </motion.div>
-      </div>
-
-      {/* TESTIMONI */}
-      <motion.h1 className="text-3xl font-bold text-center mb-20 mt-20">
+      </div>     
+    </section>
+    <section 
+    id="Testimoni"
+    className=" bg-gradient-to-br  to-purple-200 text-gray-800 overflow-hidden">
+       {/* TESTIMONI */}
+      <motion.h1  className="text-3xl font-bold text-center mb-20 mt-20">
         Testimoni Pengguna
       </motion.h1>
 
@@ -218,5 +224,6 @@ export default function Testimoni() {
         <div className="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 h-2 w-32 bg-blue-400 rounded-full z-0" />
       </div>
     </section>
+    </div>
   );
 }

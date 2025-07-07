@@ -99,6 +99,11 @@ export default function Register() {
           >
             Daftar
           </button>
+           <div className="mt-4 text-center">
+            <Link to="/" className="text-blue-500 hover:underline text-sm">
+              Kembali ke landing page
+            </Link>
+          </div>
         </div>
 
         {/* Login Info */}

@@ -86,9 +86,9 @@ export default function Login() {
               <input type="checkbox" className="mr-2" />
               Ingatkan Saya
             </label>
-            <a href="#" className="hover:underline font-medium">
+            <Link to="/forgot" className="hover:underline font-medium">
               Lupa Password?
-            </a>
+            </Link>
           </div>
 
           <button 
@@ -96,6 +96,11 @@ export default function Login() {
           className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
             Masuk
           </button>
+           <div className="mt-4 text-center">
+            <Link to="/" className="text-blue-500 hover:underline text-sm">
+              Kembali ke landing page
+            </Link>
+          </div>
         </div>
 
         {/* Signup Info */}

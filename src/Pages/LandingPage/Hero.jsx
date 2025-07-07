@@ -234,29 +234,7 @@ export default function Hero() {
             </motion.div>
           ))}
         </motion.div>
-        <div>
-           <motion.div
-        className="max-w-3xl mx-auto bg-primary text-primary-content rounded-2xl p-8 shadow-md text-center relative overflow-hidden mb-5"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-      >
-        <div className={`transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}>
-          <p className="italic text-xl">"{testimonials[current].quote}"</p>
-          <p className="mt-4 text-sm font-semibold">{testimonials[current].name}</p>
-        </div>
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {testimonials.map((_, index) => (
-            <span
-              key={index}
-              className={`h-2 w-2 rounded-full ${index === current ? "bg-white" : "bg-white/50"}`}
-            ></span>
-          ))}
-        </div>
-      </motion.div>
-
-        </div>
+  
         </div>
 
       </section>

@@ -26,6 +26,7 @@ const ManajemenFAQ = React.lazy(() => import("./Pages/Admin/ManajemenFAQ"));
 const ManajemenTim = React.lazy(() => import("./Pages/Admin/ManajemenTim"));
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+const PrivateRoute = React.lazy(() => import("./Layouts/PrivateRoute"));
 
 
 
@@ -45,13 +46,21 @@ function App() {
             <Route path="/register" element={<Register/>}/>
             <Route path="/forgot" element={<Forgot/>}/>
         </Route>
-        <Route element={<Guest />}>
+        <Route  element={
+          <PrivateRoute role="user">
+            <Guest />
+          </PrivateRoute>
+        }>
             <Route path="/Beranda" element={<Dashboard/>}/>
             <Route path="/Saldo" element={<Saldo/>}/>
             <Route path="/Transaksi" element={<Transaksi/>}/>
             <Route path="/Kelola-Budget" element={<Budget/>}/>
         </Route>              
-        <Route element={<AdminLayout />}>
+        <Route   element={
+          <PrivateRoute role="admin">
+            <AdminLayout />
+          </PrivateRoute>
+        }>
             <Route path="/BerandaAdmin" element={<BerandaAdmin/>}/>
             <Route path="/ManajemenSumber" element={<ManajemenSumber/>}/>
             <Route path="/ManajemenTim" element={<ManajemenTim/>}/>

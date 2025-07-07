@@ -27,4 +27,18 @@ export const userAPI = {
         headers,
     });
     },
+    async checkEmail(email) {
+    const response = await axios.get(`${API_URL}?email=eq.${email}`, { headers });
+    const data = response.data;
+    return { exists: data.length > 0 };
+  },
+
+  async updatePassword(email, newPassword) {
+    const response = await axios.patch(
+      `${API_URL}?email=eq.${email}`,
+      { password: newPassword },
+      { headers }
+    );
+    return { success: response.status === 204 }; 
+  },
 }

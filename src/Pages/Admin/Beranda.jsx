@@ -40,8 +40,8 @@ export default function Beranda() {
     { status: "Disembunyikan", value: jumlahFAQDisembunyikan },
   ];
   const COLORS = [
-    "#3B82F6",
-    "#10B981",
+    "#10B981", 
+    "#3B82F6", 
     "#F59E0B",
     "#EF4444",
     "#6366F1",

@@ -14,6 +14,7 @@ import About from "./About";
 import Testimoni from "./Testimoni";
 import Berlangganan from "./Berlangganan";
 import ScrollVelocity from "../../Components/ScrollVelocity";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 
 
@@ -195,20 +196,22 @@ export default function Hero() {
           </motion.div>          
 
           {/* Right */}
-          <motion.div
-            className="w-full md:w-1/2 flex justify-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="relative w-[280px] h-[360px] rounded-[50%/60%] border-4 border-white overflow-hidden shadow-2xl">
-              <img
-                src="/img/Sigocengss.jpg"
-                alt="Hero"
-                className="object-cover w-full h-full"
-              />
-            </div>
-          </motion.div>
+     <motion.div
+      className="w-full md:w-1/2 flex justify-center items-center"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      {/* Lottie tanpa card putih */}
+      <div className="w-[500px] h-[500px]">
+        <DotLottieReact
+          src="https://lottie.host/a1d603fc-200a-4ac8-99ee-f0e2a9ca8171/HT00BkzHZ7.lottie"
+          loop
+          autoplay
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+    </motion.div>
         </div>
         <div className="mt-15">
            <motion.div

@@ -1,27 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Slider from "react-slick";
+import { ChevronDown } from "lucide-react";
+import { FaStar, FaHeart } from "react-icons/fa";
+import { FAQAPI } from "../../assets/services/FAQAPI";
 import { testimoniAPI } from "../../assets/services/testimoniAPI";
 import { userAPI } from "../../assets/services/userAPI";
-import { FAQAPI } from "../../assets/services/FAQAPI";
-import { FaStar, FaHeart } from "react-icons/fa";
 
-export default function Testimoni() {
-  const [dataTestimoni, setDataTestimoni] = useState([]);
+export default function FAQTestimoniSection() {
   const [faqs, setFaqs] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [dataTestimoni, setDataTestimoni] = useState([]);
 
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchData = async () => {
       try {
-        const [tData, uData] = await Promise.all([
+        const [faqData, testiData, userData] = await Promise.all([
+          FAQAPI.fetchFAQ(),
           testimoniAPI.fetchTestimoni(),
           userAPI.fetchUser(),
         ]);
 
-        const usersFiltered = uData.filter((u) => u.role === "user");
+        const filteredFAQs = faqData
+          .filter((item) => item.status === "ditampilkan")
+          .map((item) => ({
+            question: item.pertanyaan,
+            answer: item.jawaban,
+          }));
 
-        const merged = tData
+        setFaqs(filteredFAQs);
+
+        const usersFiltered = userData.filter((u) => u.role === "user");
+
+        const mergedTestimoni = testiData
           .filter((t) => t.status === "ditampilkan")
           .map((t) => {
             const relatedUser = usersFiltered.find(
@@ -29,44 +40,21 @@ export default function Testimoni() {
             );
             return {
               ...t,
-              user: relatedUser,
+              user: relatedUser || { nama: "Anonim", role: "Pengguna Aplikasi" },
             };
           });
 
-        setDataTestimoni(merged);
-      } catch (err) {
-        console.error("Gagal ambil data testimoni:", err);
-      }
-    };
-
-    const fetchFAQ = async () => {
-      try {
-        const result = await FAQAPI.fetchFAQ();
-        const filtered = result.filter((item) => item.status === "ditampilkan");
-        setFaqs(
-          filtered.map((item) => ({
-            question: item.pertanyaan,
-            answer: item.jawaban,
-          }))
-        );
+        setDataTestimoni(mergedTestimoni);
       } catch (error) {
-        console.error("Gagal mengambil data FAQ:", error);
+        console.error("Gagal mengambil data:", error);
       }
     };
 
-    fetchAll();
-    fetchFAQ();
+    fetchData();
   }, []);
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    arrows: false,
+  const toggleAccordion = (index) => {
+    setExpandedIndex(index === expandedIndex ? null : index);
   };
 
   const renderStars = (count = 4) => {
@@ -75,155 +63,189 @@ export default function Testimoni() {
     ));
   };
 
-  return (
-    <div>
-    <section
-    id="Question"
-    className="w-full py-20 bg-gradient-to-br from-blue-100 to-purple-200 text-gray-800 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="max-w-6xl mx-auto px-4 text-center mb-12"
-      >
-        <h2 className="text-3xl font-bold mb-4">
-          Pertanyaan Umum Seputar Manajemen Keuangan SiGocengs
-        </h2>
-      </motion.div>
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 6000,
+    arrows: false,
+  };
 
-      {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-4 mt-15">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="card bg-white shadow-xl border border-gray-200"
+  return (
+    <section className="bg-gradient-to-br from-blue-100 via-white to-purple-100 py-20 px-4">
+      {/* Header FAQ */}
+      <div className="max-w-6xl mx-auto mb-12 text-center">
+        <motion.h2
+          className="text-3xl font-bold text-gray-800"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
         >
-          <div className="card-body">
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {faqs.map((faq, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelected(i)}
-                  className={`btn btn-sm rounded-full transition ${
-                    selected === i ? "btn-primary text-white" : "btn-outline"
-                  }`}
+          Pertanyaan Umum Seputar Manajemen Keuangan
+        </motion.h2>
+        <p className="text-gray-600 mt-2 text-sm">
+          Temukan jawaban dari pertanyaan umum yang sering diajukan oleh pengguna SiGocengs.
+        </p>
+      </div>
+
+      {/* FAQ & Form */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        {/* FAQ */}
+        <div className="bg-white shadow-xl rounded-xl p-6 space-y-2">
+          {faqs.map((faq, index) => (
+            <div key={index} className="group border-b border-gray-200">
+              <button
+                onClick={() => toggleAccordion(index)}
+                className="w-full py-4 flex justify-between items-center text-left hover:text-blue-600 transition duration-300"
+              >
+                <span
+                  className={`text-base font-semibold transition ${expandedIndex === index ? "text-blue-800" : "text-gray-700"
+                    } group-hover:text-blue-600`}
                 >
                   {faq.question}
-                </button>
-              ))}
-              <button
-                onClick={() => setSelected(null)}
-                className="btn btn-sm btn-neutral rounded-full"
-              >
-                Tampilkan Semua
+                </span>
+                <ChevronDown
+                  className={`w-5 h-5 text-blue-500 transform transition-transform duration-300 ${expandedIndex === index ? "rotate-180" : ""
+                    }`}
+                />
               </button>
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={
+                  expandedIndex === index
+                    ? { height: "auto", opacity: 1 }
+                    : { height: 0, opacity: 0 }
+                }
+                transition={{ duration: 0.4 }}
+                className="overflow-hidden text-gray-600 text-sm pb-4 pr-2"
+              >
+                {faq.answer}
+              </motion.div>
             </div>
+          ))}
+        </div>
 
-            <div className="flex flex-col gap-6">
-              {(selected !== null ? [faqs[selected]] : faqs).map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: selected !== null ? 0 : index * 0.15,
-                  }}
-                  className="space-y-2"
-                >
-                  <div className="chat chat-start">
-                    <div className="chat-bubble chat-bubble-primary text-sm px-4 py-3 max-w-xs sm:max-w-md text-white font-semibold">
-                      {faq.question}
-                    </div>
-                  </div>
-                  <div className="chat chat-end">
-                    <div className="chat-bubble bg-gray-100 text-gray-800 text-sm px-4 py-3 max-w-xs sm:max-w-md">
-                      {faq.answer}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+        {/* Form Pertanyaan */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-blue-500 shadow-lg rounded-xl p-8 flex flex-col justify-center"
+        >
+          <h3 className="text-xl font-semibold text-black mb-4 text-center">
+            Masih ada pertanyaan?
+          </h3>
+          <form className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="👤 Nama Lengkap"
+                className="p-3 border border-blue-300 rounded-lg w-full bg-white text-black placeholder-gray-600 focus:ring-2 focus:ring-blue-400 transition"
+              />
+              <input
+                type="email"
+                placeholder="✉️ Email"
+                className="p-3 border border-blue-300 rounded-lg w-full bg-white text-black placeholder-gray-600 focus:ring-2 focus:ring-blue-400 transition"
+              />
             </div>
+            <textarea
+              placeholder="📝 Tulis pesan kamu..."
+              className="p-3 border border-blue-300 rounded-lg w-full bg-white text-black placeholder-gray-600 focus:ring-2 focus:ring-blue-400 transition"
+              rows={5}
+            />
+            <button
+              type="submit"
+              className="bg-white text-blue-600 font-semibold py-3 rounded-md w-full hover:bg-blue-100 transition duration-300"
+            >
+              Kirim Pesan
+            </button>
+          </form>
+        </motion.div>
+      </div>
+
+      {/* Testimoni */}
+      <div className="mt-24 max-w-3xl mx-auto">
+        <motion.h2
+          className="text-3xl font-bold text-center mb-10 text-gray-800"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Apa Kata Pengguna Kami
+        </motion.h2>
+
+        <motion.div
+          className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-[2rem] p-1 shadow-2xl border-4 border-white relative z-10"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ minHeight: "460px" }}
+        >
+          <div className="bg-white rounded-[2rem] p-6">
+            <Slider {...sliderSettings}>
+              {dataTestimoni.map((item, idx) => (
+                <div key={idx} className="flex justify-center items-center px-4 py-4">
+                  <motion.div
+                    className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-auto border border-gray-200 hover:scale-[1.03] hover:shadow-2xl transition-all duration-300"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.1 }}
+                  >
+                    {/* Floating Icon */}
+                    <motion.div
+                      className="absolute -top-5 right-5 z-20"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                    >
+                      <div className="bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow p-3">
+                        <FaHeart className="text-white text-xl" />
+                      </div>
+                    </motion.div>
+
+                    {/* Avatar */}
+                    <div className="flex justify-center mb-3 relative">
+                      <motion.div
+                        className="avatar"
+                        whileHover={{ scale: 1.1, rotate: 2 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                      >
+                        <div className={`w-16 rounded-full ring ${idx % 2 === 0 ? "ring-blue-400" : "ring-purple-400"} ring-offset-2`}>
+                          <img
+                            src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${item.user?.nama || "anonim"}`}
+                            alt="avatar"
+                          />
+                        </div>
+                      </motion.div>
+                    </div>
+
+                    {/* Nama dan role */}
+                    <h3 className="text-center font-bold text-lg mb-1">
+                      {item.user?.nama || "Anonim"}
+                    </h3>
+                    <p className="text-center text-xs text-gray-500 mb-2">
+                      {item.user?.role || "Pengguna Aplikasi"}
+                    </p>
+
+                    {/* Bintang */}
+                    <div className="flex justify-center mb-3">
+                      {renderStars(4 + (idx % 2))}
+                    </div>
+
+                    {/* Pesan */}
+                    <p className="text-center text-sm italic text-gray-700 leading-relaxed">
+                      "{item.testimoni}"
+                    </p>
+                  </motion.div>
+                </div>
+              ))}
+            </Slider>
           </div>
         </motion.div>
-      </div>     
-    </section>
-    <section 
-    id="Testimoni"
-    className=" bg-gradient-to-br  to-purple-200 text-gray-800 overflow-hidden">
-       {/* TESTIMONI */}
-      <motion.h1  className="text-3xl font-bold text-center mb-20 mt-20">
-        Testimoni Pengguna
-      </motion.h1>
-
-      <div className="max-w-3xl mx-auto relative">
-        <motion.div
-          className="bg-white rounded-3xl p-6 shadow-2xl border-4 border-gray-300 relative z-10"
-          style={{ borderRadius: "2rem", minHeight: "420px" }}
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-16 h-2 bg-gray-500 rounded"></div>
-          <Slider {...settings}>
-            {dataTestimoni.map((item, idx) => (
-              <div key={idx} className="flex justify-center items-center px-4 py-4">
-                <motion.div
-                  className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-auto border border-gray-200 hover:shadow-xl transition duration-300"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, ease: "easeOut", delay: idx * 0.1 }}
-                >
-                  <div className="absolute -top-5 right-5 z-20 animate-pulse">
-                    <div className="bg-blue-400 rounded-xl shadow p-3">
-                      <FaHeart className="text-white text-xl" />
-                    </div>
-                  </div>
-
-                  <motion.div
-                    className="flex justify-center mb-3"
-                    initial={{ y: -10 }}
-                    animate={{ y: 0 }}
-                    transition={{ type: "spring", stiffness: 120, delay: 0.2 }}
-                  >
-                    <div className="avatar">
-                      <div className="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                        <img
-                          src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${item.user?.nama || "anonim"}`}
-                          alt="avatar"
-                        />
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  <h3 className="text-center font-bold text-lg mb-1">{item.user?.nama || "Anonim"}</h3>
-                  <motion.div
-                    className="flex justify-center mb-3"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    {renderStars(4 + (idx % 2))}
-                  </motion.div>
-
-                  <motion.p
-                    className="text-center text-sm italic text-gray-700 leading-relaxed"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    "{item.testimoni}"
-                  </motion.p>
-                </motion.div>
-              </div>
-            ))}
-          </Slider>
-        </motion.div>
-        <div className="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 h-2 w-32 bg-blue-400 rounded-full z-0" />
       </div>
     </section>
-    </div>
   );
 }

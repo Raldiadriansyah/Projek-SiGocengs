@@ -179,7 +179,7 @@ export default function FAQTestimoniSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Testimoni Pengguna
+          Apa kata Pengguna Kami? Berikut Testimoninya
         </motion.h2>
 
         <motion.div
